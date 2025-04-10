@@ -101,6 +101,11 @@ private val homeViewModel: HomeViewModel by viewModels() // khai báo viewmodel
 
 
               CustomNavigation(navController,context, homeViewModel)
+//              CustomNavigation(navController,context, homeViewModel)
+//              CustomNavigation(navController,context, homeViewModel)
+//              CustomNavigation(navController,context, homeViewModel)
+//              CustomNavigation(navController,context, homeViewModel)
+//              CustomNavigation(navController,context, homeViewModel)
 
 
 

@@ -5,7 +5,7 @@ import android.net.Uri
 import java.io.File
 import java.io.FileOutputStream
 
-object FileUtils {
+object ImageUtils {
     fun saveImageToInternalStorage(context: Context, uri: Uri, fileName: String): String {
         return try {
             val imageDir = File(context.filesDir, "image").apply { if (!exists()) mkdir() }

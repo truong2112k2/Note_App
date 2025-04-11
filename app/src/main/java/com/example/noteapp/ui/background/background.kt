@@ -10,18 +10,18 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun MeshGradientBackground() {
+fun GradientBackground() {
     val primaryColor = MaterialTheme.colorScheme.primary  // ✅ lấy ra trước
+    val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
 
     Canvas(modifier = Modifier.fillMaxSize()) {
-        drawRect(color = Color.White, size = size)
+        drawRect(color = primaryColor, size = size)
 
         // Vùng vàng chính - mạnh và to
         drawCircle(
             brush = Brush.radialGradient(
                 colors = listOf(
                     primaryColor,
-                //     Color(0xFFFFEB3B),     // vàng đậm
                     Color(0xFFFFF59D),     // vàng nhạt
                     Color.Transparent      // kết thúc
                 ),
@@ -35,7 +35,6 @@ fun MeshGradientBackground() {
             brush = Brush.radialGradient(
                 colors = listOf(
                     primaryColor,
-//                    Color(0xFFFFF176),
                     Color.Transparent),
                 radius = size.minDimension * 0.6f
             ),
@@ -47,11 +46,25 @@ fun MeshGradientBackground() {
             brush = Brush.radialGradient(
                 colors = listOf(
                     primaryColor,
-                    //Color(0xFFFFFF8D),
                     Color.Transparent),
                 radius = size.minDimension * 0.7f
             ),
             center = Offset(size.width * 0.2f, size.height * 0.75f)
         )
+    }
+}
+fun generateRandomNonBlackWhiteColor(): Color {
+    while (true) {
+        val red = (150..240).random()
+        val green = (150..240).random()
+        val blue = (150..240).random()
+
+        // Loại bỏ màu trắng và đen
+        val isBlack = red == 0 && green == 0 && blue == 0
+        val isWhite = red == 255 && green == 255 && blue == 255
+
+        if (!isBlack && !isWhite) {
+            return Color(red, green, blue, 255)
+        }
     }
 }

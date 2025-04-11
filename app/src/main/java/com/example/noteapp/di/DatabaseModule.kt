@@ -7,6 +7,7 @@ import com.example.noteapp.data.database.NoteDatabase
 import com.example.noteapp.data.repository.ImageRepositoryImpl
 import com.example.noteapp.data.repository.NoteRepositoryImpl
 import com.example.noteapp.domain.use_case.AddNoteUseCase
+import com.example.noteapp.domain.use_case.GetNotesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,8 +55,14 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideNoteUseCase(noteRepositoryImpl: NoteRepositoryImpl, imageRepositoryImpl: ImageRepositoryImpl): AddNoteUseCase{
+    fun provideAddNoteUseCase(noteRepositoryImpl: NoteRepositoryImpl, imageRepositoryImpl: ImageRepositoryImpl): AddNoteUseCase{
         return AddNoteUseCase(noteRepositoryImpl, imageRepositoryImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetNoteUseCase(noteRepositoryImpl: NoteRepositoryImpl) : GetNotesUseCase{
+        return  GetNotesUseCase(noteRepositoryImpl)
     }
 
 }

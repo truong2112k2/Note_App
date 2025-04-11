@@ -10,7 +10,7 @@ data class NoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
     val content: String,
-    val time: String, // time created
+    val dateAdd: String, // time created
     val category: String,
     val priority: Int,
     val image: String?,

@@ -8,12 +8,12 @@ fun NoteEntity.toNote(): Note {
         id = this.id,
         title = this.title,
         content = this.content,
-        time = this.time,
+        dateAdd = this.dateAdd,
         category = this.category,
         priority = this.priority,
         image = this.image,
         timeNotify = this.timeNotify,
-        date = this.date // ✅ thêm dòng này
+        dateNotify = this.date // ✅ thêm dòng này
     )
 }
 
@@ -22,11 +22,11 @@ fun Note.toNoteEntity(): NoteEntity {
         id = this.id,
         title = this.title,
         content = this.content,
-        time = this.time,
+        dateAdd = this.dateAdd,
         category = this.category,
         priority = this.priority,
         image = this.image,
         timeNotify = this.timeNotify,
-        date = this.date // ✅ thêm dòng này
+        date = this.dateNotify // ✅ thêm dòng này
     )
 }

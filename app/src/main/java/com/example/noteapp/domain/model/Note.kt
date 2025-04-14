@@ -1,6 +1,6 @@
 package com.example.noteapp.domain.model
 
-class Note (
+data class Note (
         val id: Long = 0,
         val title: String,
         val content: String,

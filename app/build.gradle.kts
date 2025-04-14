@@ -108,6 +108,9 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.1")
     implementation ("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
 
+    implementation("com.google.accompanist:accompanist-placeholder-material:0.30.1")
+
+
 
 
 

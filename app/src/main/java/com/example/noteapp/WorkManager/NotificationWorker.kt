@@ -24,16 +24,18 @@ class NotificationWorker(
 
         // tao channel
 
+
+        val channelId = "note_channel"
         if( Build.VERSION.SDK_INT  >= Build.VERSION_CODES.O){
             val channel = NotificationChannel(
-                "note_channel_id",
+                channelId,
                 "Note Reminder",
                 NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(channel)
         }
 
-        val notification = NotificationCompat.Builder(applicationContext, "note_title")
+        val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setContentTitle(time)
             .setContentText(title)
             .setSmallIcon(R.drawable.ic_language)

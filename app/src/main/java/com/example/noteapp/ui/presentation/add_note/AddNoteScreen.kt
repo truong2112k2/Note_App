@@ -137,7 +137,8 @@ fun AddNoteScreen(
                     permissionGranted.value = true
                     addNoteViewModel.insertNote(context)
                 } else {
-                    Toast.makeText(context, "Notification permission denied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Notification permission denied", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
@@ -225,13 +226,12 @@ fun AddNoteScreen(
                                 .clickable {
                                     // ADD_NOTE
 
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                        } else {
-                                            addNoteViewModel.insertNote(context)
-                                        }
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    } else {
+                                        addNoteViewModel.insertNote(context)
+                                    }
 
-                                    addNoteViewModel.insertNote(context)
                                 },
                             tint = onPrimaryColor
 
@@ -290,7 +290,6 @@ fun AddNoteScreen(
                         offset = DpOffset(x = 0.dp, y = 10.dp), //
 
 
-
                     ) {
                         listCategory.forEach { category ->
                             DropdownMenuItem(
@@ -300,7 +299,7 @@ fun AddNoteScreen(
                                         fontSize = 16.sp,
                                         color = primaryColor,
 
-                                    )
+                                        )
                                 },
                                 onClick = {
                                     addNoteViewModel.updateSelectCategory(category)
@@ -350,7 +349,7 @@ fun AddNoteScreen(
                         onDismissRequest = { addNoteViewModel.updatePriorityMenuExpanded(false) },
                         offset = DpOffset(x = 0.dp, y = 10.dp) // 👈 Lệch xuống 10.dp
 
-                        ) {
+                    ) {
                         listPriority.forEach { priority ->
                             DropdownMenuItem(
                                 text = {
@@ -563,20 +562,3 @@ fun AddNoteScreen(
     }
 }
 
-@Composable
-fun RequestNotificationPermission(context: Context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val permissionLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-            onResult = { granted ->
-                if (!granted) {
-                    Toast.makeText(context, "Bạn cần cấp quyền thông báo!", Toast.LENGTH_SHORT).show()
-                }
-            }
-        )
-
-        LaunchedEffect(Unit) {
-            permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
-}

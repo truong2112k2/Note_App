@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GetNotesUseCase @Inject constructor(
+class GetNoteUseCase @Inject constructor(
     private var noteRepository: INoteRepository,
 ) {
 
@@ -24,6 +24,18 @@ class GetNotesUseCase @Inject constructor(
             }
         }
 
+    }
+    suspend fun getNoteById(id: Long ): Note? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val listNoteEntity = noteRepository.getNoteByID(id)
+                val note =  listNoteEntity?.toNote()
+                note
+            } catch (e: Exception) {
+                Log.d(Constants.ERROR_TAG, e.message.toString())
+                null
+            }
+        }
 
     }
 

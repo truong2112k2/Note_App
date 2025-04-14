@@ -1,6 +1,7 @@
 package com.example.noteapp.ui.presentation.home
 
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -10,9 +11,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.noteapp.domain.model.Note
-import com.example.noteapp.domain.use_case.GetNotesUseCase
+import com.example.noteapp.domain.use_case.GetNoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getNotesUseCase: GetNotesUseCase
+    private val getNotesUseCase: GetNoteUseCase
 ) : ViewModel() {
 
     val searchText = mutableStateOf("")
@@ -29,12 +31,22 @@ class HomeViewModel @Inject constructor(
         searchText.value = value
     }
 
+
+
+
     private val _listNote = MutableStateFlow<List<Note>>(emptyList())
     val listNote: StateFlow<List<Note>> = _listNote.asStateFlow()
 
     private val _isDarkTheme = MutableStateFlow(false)
     val isDarkTheme = _isDarkTheme.asStateFlow()
 
+    private val _homeState = mutableStateOf(HomeState())
+    val homeState : State<HomeState> = _homeState
+
+/*
+    private val _addNoteState = mutableStateOf(AddNoteState())
+    val addNoteState: State<AddNoteState> = _addNoteState
+ */
     fun toggleTheme() {
         _isDarkTheme.value = !_isDarkTheme.value
     }
@@ -47,10 +59,27 @@ class HomeViewModel @Inject constructor(
     val heights: Map<Int, Dp> get() = _heights
 
     fun getAllNote() {
+
+        _homeState.value = HomeState(isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
             val notes = getNotesUseCase.getAllNote()
-            _listNote.value = notes
-            generateRandomStyles(notes)
+
+       //     delay(5000)
+
+            if( notes.isEmpty()){
+                _homeState.value = HomeState(error = "Can't get data from database")
+            }else{
+
+                _listNote.value = notes
+                generateRandomStyles(notes)
+
+                _homeState.value = HomeState(
+                    isLoading = false,
+                    isSuccess = true
+                )
+
+
+            }
         }
     }
 

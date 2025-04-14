@@ -31,8 +31,9 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".WorkManager.BootReceiver"
-            android:exported="true">
+        <receiver android:name=".WorkManager.NotificationWorker"
+            android:exported="true"
+            tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>

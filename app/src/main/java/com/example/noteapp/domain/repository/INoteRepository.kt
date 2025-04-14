@@ -12,4 +12,6 @@ interface INoteRepository {
 
     suspend fun deleteNoteById(id: Long): Int
 
+    suspend fun getNoteByID(id: Long ): NoteEntity?
+
 }

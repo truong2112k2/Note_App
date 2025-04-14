@@ -6,13 +6,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.random.Random
 
 @Composable
 fun GradientBackground() {
     val primaryColor = MaterialTheme.colorScheme.primary  // ✅ lấy ra trước
-    val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawRect(color = primaryColor, size = size)
@@ -53,18 +59,27 @@ fun GradientBackground() {
         )
     }
 }
-fun generateRandomNonBlackWhiteColor(): Color {
-    while (true) {
-        val red = (150..240).random()
-        val green = (150..240).random()
-        val blue = (150..240).random()
 
-        // Loại bỏ màu trắng và đen
-        val isBlack = red == 0 && green == 0 && blue == 0
-        val isWhite = red == 255 && green == 255 && blue == 255
+@Composable
+fun StarryBackground() {
+    val backgroundColor = MaterialTheme.colorScheme.primary
 
-        if (!isBlack && !isWhite) {
-            return Color(red, green, blue, 255)
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        // Vẽ nền
+        drawRect(color = backgroundColor, size = size)
+
+        // Tạo danh sách ngôi sao ngẫu nhiên
+        val numberOfStars = 100
+        repeat(numberOfStars) {
+            val x = Random.nextFloat() * size.width
+            val y = Random.nextFloat() * size.height
+            val radius = Random.nextFloat() * 3f + 1f  // Kích thước từ 1 đến 4
+            drawCircle(
+                color = Color.White.copy(alpha = Random.nextFloat() * 0.8f + 0.2f), // ánh sáng lấp lánh
+                radius = radius,
+                center = Offset(x, y)
+            )
         }
     }
 }
+

@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">NoteApp</string>
+    <string name="welcome">
+    Welcome!\n
+    Jot down your important tasks, thoughts, and to-dos – \t all in one place.\n
+    Add images to your notes to make them more visual \t and meaningful.\n
+    Looks like you don’t have any notes yet.\n
+    Tap button create your first note and start organizing your life!\n
+    Stay focused, stay inspired – your ideas matter.
+</string>
+
+
+    <string name="welcome_message">Welcome!</string>
+    <string name="note_feature_description">Jot down your important tasks, thoughts, and to-dos – all in one place.</string>
+    <string name="note_image_hint">Add images to your notes to make them more visual and meaningful.</string>
+    <string name="no_notes_yet">Looks like you don’t have any notes yet.</string>
+    <string name="create_note_now">Tap the plus button create your first note and start organizing your life!</string>
+    <string name="inspiration_message">Stay focused, stay inspired – your ideas matter.</string>
 </resources>

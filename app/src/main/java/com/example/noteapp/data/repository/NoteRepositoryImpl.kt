@@ -46,7 +46,7 @@ class NoteRepositoryImpl @Inject constructor(
 
 
             }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG,"ERROR INSERT NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG,"ERROR UPDATE NOTE ${e.message}")
                 0
             }
         }
@@ -59,8 +59,19 @@ class NoteRepositoryImpl @Inject constructor(
 
 
             }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG,"ERROR INSERT NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG,"ERROR DELETE NOTE ${e.message}")
                 0
+            }
+        }
+    }
+
+    override suspend fun getNoteByID(id: Long): NoteEntity? {
+        return withContext(Dispatchers.IO){
+            try{
+                noteDao.getNoteByID(id)
+            }catch (e: Exception){
+                Log.d(Constants.ERROR_TAG,"ERROR DELETE NOTE ${e.message}")
+                null
             }
         }
     }

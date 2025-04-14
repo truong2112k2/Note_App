@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.noteapp.common.Constants
 import com.example.noteapp.ui.presentation.add_note.AddNoteScreen
+import com.example.noteapp.ui.presentation.detail.DetailNoteScreen
 import com.example.noteapp.ui.presentation.home.HomeScreen
 import com.example.noteapp.ui.presentation.home.HomeViewModel
 
@@ -25,6 +26,12 @@ NavHost(navController = navController, startDestination = Constants.HOME_ROUTE) 
     }
     composable(Constants.ADD_NOTE_ROUTE) {
         AddNoteScreen(context, navController)
+    }
+
+    composable("${Constants.DETAIL_NOTE_ROUTE}/{idNote}") { backStackEntry ->
+        val idNote = backStackEntry.arguments?.getString("idNote") ?: "0"
+
+        DetailNoteScreen(idNote)
     }
 }
 }

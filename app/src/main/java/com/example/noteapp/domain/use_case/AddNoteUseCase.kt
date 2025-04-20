@@ -4,7 +4,6 @@ import android.net.Uri
 import android.util.Log
 import com.example.noteapp.common.Constants
 import com.example.noteapp.common.toNoteEntity
-import com.example.noteapp.data.entity.NoteEntity
 import com.example.noteapp.domain.model.Note
 import com.example.noteapp.domain.repository.IImageRepository
 import com.example.noteapp.domain.repository.INoteRepository
@@ -17,7 +16,7 @@ class AddNoteUseCase @Inject constructor(
     private var imageRepository: IImageRepository
 ) {
      suspend fun insertNote(note: Note): Long {
-         Log.d(Constants.STATUS_TAG,"Insert in NoteUseCase")
+         Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN,"Insert in NoteUseCase")
 
          return withContext(Dispatchers.IO){
             try {
@@ -26,7 +25,7 @@ class AddNoteUseCase @Inject constructor(
                 noteRepository.insertNote(noteConvert)
 
             }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG,"ERROR INSERT NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR INSERT NOTE ${e.message}")
                 -1
             }
         }

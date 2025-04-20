@@ -15,13 +15,13 @@ class NoteRepositoryImpl @Inject constructor(
     private val noteDao: NoteDao
 ): INoteRepository  {
     override suspend fun insertNote(note: NoteEntity): Long {
-        Log.d(Constants.STATUS_TAG,"Insert in NoteRepositoryImpl")
+        Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN,"Insert in NoteRepositoryImpl")
         return withContext(Dispatchers.IO){
             try {
                 noteDao.insertNote(note)
 
             }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG,"ERROR INSERT NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR INSERT NOTE ${e.message}")
                 -1
             }
         }
@@ -33,7 +33,7 @@ class NoteRepositoryImpl @Inject constructor(
                 noteDao.getAllNotes()
 
             }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG,"ERROR GET ALL NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR GET ALL NOTE ${e.message}")
                 emptyList<NoteEntity>()
             }
         }
@@ -46,7 +46,7 @@ class NoteRepositoryImpl @Inject constructor(
 
 
             }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG,"ERROR UPDATE NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR UPDATE NOTE ${e.message}")
                 0
             }
         }
@@ -59,7 +59,7 @@ class NoteRepositoryImpl @Inject constructor(
 
 
             }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG,"ERROR DELETE NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR DELETE NOTE ${e.message}")
                 0
             }
         }
@@ -70,7 +70,7 @@ class NoteRepositoryImpl @Inject constructor(
             try{
                 noteDao.getNoteByID(id)
             }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG,"ERROR DELETE NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR DELETE NOTE ${e.message}")
                 null
             }
         }

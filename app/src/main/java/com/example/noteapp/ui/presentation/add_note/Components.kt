@@ -86,6 +86,46 @@ fun AlertDialogTimePicker(
         text = { content() }
     )
 }
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ComposeDatePicker(addNoteViewModel: AddNoteViewModel = hiltViewModel()) {
+    val showPickerDate by addNoteViewModel.showPickerDate
+    val dateDialogState = rememberMaterialDialogState()
+
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+    if(showPickerDate){
+        dateDialogState.show()
+    }
+
+    MaterialDialog(
+        dialogState = dateDialogState,
+        buttons = {
+            positiveButton("OK"){
+                addNoteViewModel.updateShowPickerDate(false)
+            }
+            negativeButton("Cancel"){
+                addNoteViewModel.updateShowPickerDate(false)
+
+            }
+        },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
+        datepicker(
+            initialDate = LocalDate.now(),
+            title = "Pick Date"
+        ) {
+            addNoteViewModel.updateSelectedDate(it.format(formatter))
+        }
+    }
+}
+
+
+
+
 
 @Composable
 fun NotificationRow(
@@ -130,40 +170,4 @@ fun NotificationRow(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ComposeDatePicker(addNoteViewModel: AddNoteViewModel = hiltViewModel()) {
-    val showPickerDate by addNoteViewModel.showPickerDate
-    val dateDialogState = rememberMaterialDialogState()
-
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-
-    if(showPickerDate){
-        dateDialogState.show()
-    }
-
-    MaterialDialog(
-        dialogState = dateDialogState,
-        buttons = {
-            positiveButton("OK"){
-                addNoteViewModel.updateShowPickerDate(false)
-            }
-            negativeButton("Cancel"){
-                addNoteViewModel.updateShowPickerDate(false)
-
-            }
-        },
-        properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false
-        )
-    ) {
-        datepicker(
-            initialDate = LocalDate.now(),
-            title = "Pick Date"
-        ) {
-            addNoteViewModel.updateSelectedDate(it.format(formatter))
-        }
-    }
-}
 

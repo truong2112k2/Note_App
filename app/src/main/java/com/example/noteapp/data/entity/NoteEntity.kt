@@ -15,5 +15,5 @@ data class NoteEntity(
     val priority: Int,
     val image: String?,
     val timeNotify: String,
-    val date: String // ngày tạo (ví dụ: "2025-04-08")
+    val dateNotify: String // ngày tạo (ví dụ: "2025-04-08")
 )

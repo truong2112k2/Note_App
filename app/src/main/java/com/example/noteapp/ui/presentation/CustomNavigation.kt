@@ -31,7 +31,7 @@ NavHost(navController = navController, startDestination = Constants.HOME_ROUTE) 
     composable("${Constants.DETAIL_NOTE_ROUTE}/{idNote}") { backStackEntry ->
         val idNote = backStackEntry.arguments?.getString("idNote") ?: "0"
 
-        DetailNoteScreen(idNote)
+        DetailNoteScreen(idNote, navController)
     }
 }
 }

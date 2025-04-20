@@ -17,9 +17,11 @@ class GetNoteUseCase @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 val listNoteEntity = noteRepository.getAllNotes()
-                listNoteEntity.map { it.toNote() }
+                listNoteEntity.map {
+                    it.toNote()
+                }
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG, e.message.toString())
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
                 emptyList<Note>()
             }
         }
@@ -28,11 +30,11 @@ class GetNoteUseCase @Inject constructor(
     suspend fun getNoteById(id: Long ): Note? {
         return withContext(Dispatchers.IO) {
             try {
-                val listNoteEntity = noteRepository.getNoteByID(id)
-                val note =  listNoteEntity?.toNote()
-                note
+                val note = noteRepository.getNoteByID(id)
+                val noteConvert =  note?.toNote()
+                noteConvert
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG, e.message.toString())
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
                 null
             }
         }

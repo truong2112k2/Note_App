@@ -17,6 +17,7 @@ import androidx.work.WorkManager
 import com.example.noteapp.R
 import com.example.noteapp.WorkManager.NotificationWorker
 import com.example.noteapp.common.Constants
+import com.example.noteapp.data.utils.TimeUtils
 import com.example.noteapp.domain.model.ItemDropMenu
 import com.example.noteapp.domain.model.Note
 import com.example.noteapp.domain.use_case.AddNoteUseCase
@@ -27,7 +28,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -168,29 +168,33 @@ class AddNoteViewModel @Inject constructor(
 
                 if (selectedCategory.value == defaultItemCategory || selectedPriority.value == defaultItemPriority || titleNote.value.isEmpty() || contentNote.value.isEmpty()) {
                     _addNoteState.value = AddNoteState(error = "Fill in all fields. Please!")
-                    Log.d(Constants.ERROR_TAG, _addNoteState.value.error)
+                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
                     return@launch
                 }
 
                 if(selectedTime.value == "00:00" || selectedDate.value == "00/00/0000"){
                     _addNoteState.value = AddNoteState(error = "Select time and date. Please!")
-                    Log.d(Constants.ERROR_TAG, _addNoteState.value.error)
+                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
                     return@launch
                 }
 
                 if (titleNote.value.length > 50 || contentNote.value.length > 5000) {
                     _addNoteState.value = AddNoteState(error = "Title or content too long")
-                    Log.d(Constants.ERROR_TAG, _addNoteState.value.error)
+                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
 
                     return@launch
 
                 }
+                if(TimeUtils.isNotifyTimeInPast(selectedDate.value, selectedTime.value)){
+                    _addNoteState.value = AddNoteState(error = "Time is in the past")
+                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
+                    return@launch
+                }
 
-              val currentTime = LocalDateTime.now()
-
+                val currentTime = LocalDateTime.now()
                 val today = LocalDate.now()
                 val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
-                val currentDate = today.format(formatter)
+                val currentDate = today.format(formatter) // thời gian thêm note
 
 
                 val imagePath = if (selectedImageUri.value != null) {
@@ -215,17 +219,17 @@ class AddNoteViewModel @Inject constructor(
                 val insertNote = noteUseCase.insertNote(note)
                 if (insertNote.toInt() == -1) {
                     _addNoteState.value = AddNoteState(error = "Insert failed")
-                    Log.d(Constants.ERROR_TAG, _addNoteState.value.error)
+                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
 
                 } else {
                     _addNoteState.value = AddNoteState(isSuccess = true)
                     scheduleNotification(context,note.title, note.dateNotify, note.timeNotify)
-                    Log.d(Constants.ERROR_TAG, _addNoteState.value.isSuccess.toString())
+                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.isSuccess.toString())
 
                 }
 
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG, e.message.toString())
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
                 _addNoteState.value = AddNoteState(error = e.message ?: "Unknown error")
 
             }
@@ -237,6 +241,7 @@ class AddNoteViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun scheduleNotification( context: Context,noteTitle: String, date: String, time: String) {
+        Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN, "scheduleNotification")
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.getDefault())
         val dateTimeString = "$date $time" // ví dụ: "12/04/2025 14:30"
         val localDateTime = LocalDateTime.parse(dateTimeString, formatter)

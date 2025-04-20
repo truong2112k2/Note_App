@@ -213,7 +213,7 @@ fun AddNoteScreen(
                                 .size(24.dp)
                                 .clickable {
                                     addNoteViewModel.updateShowPickerTime(true)
-                                    Log.d("CheckValue", selectedDate)
+                                    Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN, selectedDate)
                                 },
                             tint = onPrimaryColor
 
@@ -265,7 +265,7 @@ fun AddNoteScreen(
                             .padding(horizontal = 12.dp, vertical = 8.dp)
                             .clickable {
                                 addNoteViewModel.updateCategoryMenuExpended(!categoryMenuExpanded)
-                                Log.d(Constants.STATUS_TAG, "Expanded = $categoryMenuExpanded")
+                                Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN, "Expanded = $categoryMenuExpanded")
                             }
                     ) {
                         Text(

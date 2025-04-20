@@ -13,7 +13,7 @@ fun NoteEntity.toNote(): Note {
         priority = this.priority,
         image = this.image,
         timeNotify = this.timeNotify,
-        dateNotify = this.date // ✅ thêm dòng này
+        dateNotify = this.dateNotify // ✅ thêm dòng này
     )
 }
 
@@ -27,6 +27,6 @@ fun Note.toNoteEntity(): NoteEntity {
         priority = this.priority,
         image = this.image,
         timeNotify = this.timeNotify,
-        date = this.dateNotify // ✅ thêm dòng này
+        dateNotify = this.dateNotify // ✅ thêm dòng này
     )
 }

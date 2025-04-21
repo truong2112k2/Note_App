@@ -3,24 +3,19 @@ package com.example.noteapp.ui.presentation.add_note
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.noteapp.R
-import com.example.noteapp.WorkManager.NotificationWorker
 import com.example.noteapp.common.Constants
 import com.example.noteapp.data.utils.TimeUtils
 import com.example.noteapp.domain.model.ItemDropMenu
 import com.example.noteapp.domain.model.Note
 import com.example.noteapp.domain.use_case.AddNoteUseCase
+import com.example.noteapp.domain.use_case.ScheduleNotifyUseCase
 import com.example.noteapp.ui.theme.high
 import com.example.noteapp.ui.theme.low
 import com.example.noteapp.ui.theme.medium
@@ -28,19 +23,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
 @HiltViewModel
 class AddNoteViewModel @Inject constructor(
     private val noteUseCase: AddNoteUseCase,
-    @ApplicationContext context: Context
+    private val scheduleNotify: ScheduleNotifyUseCase,
 ) : ViewModel() {
 
 
@@ -48,7 +41,7 @@ class AddNoteViewModel @Inject constructor(
 
     val contentNote = mutableStateOf("")//reset
 
-    private val defaultItemCategory = ItemDropMenu("Category", icon =  R.drawable.ic_category )
+    private val defaultItemCategory = ItemDropMenu("Category", icon = R.drawable.ic_category)
 
     val listCategory = listOf(
         ItemDropMenu("Work", icon = R.drawable.ic_work),
@@ -61,7 +54,6 @@ class AddNoteViewModel @Inject constructor(
     var categoryMenuExpanded = mutableStateOf(false)
 
     var selectedCategory = mutableStateOf(defaultItemCategory)//reset
-
 
 
     private val defaultItemPriority = ItemDropMenu("Priority", color = Color.Transparent)
@@ -85,7 +77,7 @@ class AddNoteViewModel @Inject constructor(
 
     var showDialog = mutableStateOf(false)
 
-    var dialogMessage =  mutableStateOf("") //reset
+    var dialogMessage = mutableStateOf("") //reset
 
     private val _addNoteState = mutableStateOf(AddNoteState())
     val addNoteState: State<AddNoteState> = _addNoteState
@@ -137,11 +129,11 @@ class AddNoteViewModel @Inject constructor(
 
     }
 
-    fun updateShowDialog(updateValue: Boolean){
+    fun updateShowDialog(updateValue: Boolean) {
         showDialog.value = updateValue
     }
 
-    fun updateDialogMessage(updateValue: String){
+    fun updateDialogMessage(updateValue: String) {
         dialogMessage.value = updateValue
     }
 
@@ -149,12 +141,12 @@ class AddNoteViewModel @Inject constructor(
         _addNoteState.value = AddNoteState()
     }
 
-    fun resetAddNoteField(){
+    fun resetAddNoteField() {
         titleNote.value = ""
-        contentNote.value =""
+        contentNote.value = ""
         selectedCategory.value = defaultItemCategory
         selectedPriority.value = defaultItemPriority
-        selectedTime.value ="00:00"
+        selectedTime.value = "00:00"
         selectedDate.value = "00/00/0000"
         selectedImageUri.value = null
         dialogMessage.value = ""
@@ -172,7 +164,7 @@ class AddNoteViewModel @Inject constructor(
                     return@launch
                 }
 
-                if(selectedTime.value == "00:00" || selectedDate.value == "00/00/0000"){
+                if (selectedTime.value == "00:00" || selectedDate.value == "00/00/0000") {
                     _addNoteState.value = AddNoteState(error = "Select time and date. Please!")
                     Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
                     return@launch
@@ -185,7 +177,7 @@ class AddNoteViewModel @Inject constructor(
                     return@launch
 
                 }
-                if(TimeUtils.isNotifyTimeInPast(selectedDate.value, selectedTime.value)){
+                if (TimeUtils.isNotifyTimeInPast(selectedDate.value, selectedTime.value)) {
                     _addNoteState.value = AddNoteState(error = "Time is in the past")
                     Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
                     return@launch
@@ -223,8 +215,11 @@ class AddNoteViewModel @Inject constructor(
 
                 } else {
                     _addNoteState.value = AddNoteState(isSuccess = true)
-                    scheduleNotification(context,note.title, note.dateNotify, note.timeNotify)
-                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.isSuccess.toString())
+                    scheduleNotify.scheduleNotification(context, note)
+                    Log.d(
+                        Constants.ERROR_TAG_ADD_NOTE_SCREEN,
+                        _addNoteState.value.isSuccess.toString()
+                    )
 
                 }
 
@@ -238,33 +233,6 @@ class AddNoteViewModel @Inject constructor(
 
 
     }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun scheduleNotification( context: Context,noteTitle: String, date: String, time: String) {
-        Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN, "scheduleNotification")
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.getDefault())
-        val dateTimeString = "$date $time" // ví dụ: "12/04/2025 14:30"
-        val localDateTime = LocalDateTime.parse(dateTimeString, formatter)
-        val delayMillis = Duration.between(LocalDateTime.now(), localDateTime).toMillis()
-
-        if (delayMillis <= 0) return // thời gian đã qua
-
-        val data = Data.Builder()
-            .putString("note_title", noteTitle)
-            .putString("note_time", time)
-            .build()
-
-
-
-        val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
-            .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
-            .setInputData(data)
-            .build()
-
-        WorkManager.getInstance(context ).enqueue(workRequest)
-    }
-
-
 
 
 }

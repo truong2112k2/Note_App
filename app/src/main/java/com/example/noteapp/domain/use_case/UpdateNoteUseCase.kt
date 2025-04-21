@@ -22,7 +22,7 @@ class UpdateNoteUseCase @Inject constructor(
                 val noteConvert = note.toNoteEntity()
                 noteRepository.updateNote(noteConvert)
             }catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, "ERROR UPDATE NOTE ${e.message}")
+                Log.d(Constants.ERROR_TAG_DETAIL_SCREEN, "ERROR UPDATE NOTE ${e.message}")
                 -1
             }
         }
@@ -33,7 +33,7 @@ class UpdateNoteUseCase @Inject constructor(
             try{
                 imageRepository.deleteImage(fileName)
             }catch ( e: Exception){
-                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, "ERROR DELETE IMAGE ${e.message}")
+                Log.d(Constants.ERROR_TAG_DETAIL_SCREEN, "ERROR DELETE IMAGE ${e.message}")
                 false
             }
         }

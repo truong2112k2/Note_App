@@ -148,16 +148,6 @@ fun SearchBar(addNoteViewModel: HomeViewModel){
 
 
 
-@Composable
-fun ShimmerLoadingList() {
-    LazyColumn {
-        items(20) { // giả lập 8 item đang loading
-            ShimmerItem()
-        }
-    }
-}
-
-
 
 @Composable
 fun ShimmerItem(){

@@ -1,12 +1,10 @@
-package com.example.noteapp.data.dao
+package com.example.noteapp.data.data_source.local.database
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.noteapp.data.entity.NoteEntity
 
 @Dao
 interface NoteDao {

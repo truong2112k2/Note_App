@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class AddNoteUseCase @Inject constructor(
+class AddNoteUseCase  @Inject constructor(
     private var noteRepository: INoteRepository,
     private var imageRepository: IImageRepository
 ) {
@@ -29,10 +29,21 @@ class AddNoteUseCase @Inject constructor(
                 -1
             }
         }
+
     }
 
     suspend fun saveImageToFileDir(uri: Uri, fileName: String): String{
-      return  imageRepository.saveImage(uri, fileName)
+      return withContext(Dispatchers.Default){
+          try{
+              imageRepository.saveImage(uri, fileName)
+
+          }catch (e: Exception){
+              Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR INSERT NOTE ${e.message}")
+              ""
+          }
+
+      }
+
     }
 
 

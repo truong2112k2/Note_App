@@ -64,7 +64,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val notes = getNotesUseCase.getAllNote()
 
-       //     delay(5000)
 
             if( notes.isEmpty()){
                 _homeState.value = HomeState(error = "Can't get data from database")

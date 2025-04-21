@@ -1,6 +1,6 @@
 package com.example.noteapp.domain.repository
 
-import com.example.noteapp.data.entity.NoteEntity
+import com.example.noteapp.data.data_source.local.database.NoteEntity
 
 interface INoteRepository {
 

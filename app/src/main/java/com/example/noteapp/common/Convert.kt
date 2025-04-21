@@ -1,6 +1,6 @@
 package com.example.noteapp.common
 
-import com.example.noteapp.data.entity.NoteEntity
+import com.example.noteapp.data.data_source.local.database.NoteEntity
 import com.example.noteapp.domain.model.Note
 
 fun NoteEntity.toNote(): Note {

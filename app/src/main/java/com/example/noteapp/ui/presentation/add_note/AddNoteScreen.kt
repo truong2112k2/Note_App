@@ -15,7 +15,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,13 +33,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,7 +46,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -73,9 +67,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.noteapp.R
 import com.example.noteapp.common.Constants
 import com.example.noteapp.ui.background.GradientBackground
+import com.example.noteapp.ui.presentation.CustomDatePicker
+import com.example.noteapp.ui.presentation.CustomTimePicker
 
 @SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -151,96 +146,18 @@ fun AddNoteScreen(
                     addNoteViewModel.updateSelectedImageUri(it)
                 }
             }
+
+
             // TOP_APP_BAR
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent,
-                    //MaterialTheme.colorScheme.primary, // màu nền
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                title = {
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-
-                        }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "",
-                            tint = onPrimaryColor
-                        )
-                    }
-                },
-                actions = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(Modifier.width(20.dp))
-
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_image),
-                            contentDescription = "Icon 1",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable {
-                                    launcherPickImage.launch("image/*")
-                                },
-                            tint = onPrimaryColor
-                        )
-
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "Icon 2",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable {
-                                    addNoteViewModel.updateShowPickerDate(true)
-                                },
-                            tint = onPrimaryColor
-
-                        )
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_time),
-                            contentDescription = "Icon 3",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable {
-                                    addNoteViewModel.updateShowPickerTime(true)
-                                    Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN, selectedDate)
-                                },
-                            tint = onPrimaryColor
-
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Icon 4",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable {
-                                    // ADD_NOTE
-
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                    } else {
-                                        addNoteViewModel.insertNote(context)
-                                    }
-
-                                },
-                            tint = onPrimaryColor
-
-                        )
-                    }
-
-
-                }
-
+            CenterTopAppBar(
+                navController,
+                onPrimaryColor,
+                onPickImage = {launcherPickImage.launch("image/*")},
+                onPickDate = {addNoteViewModel.updateShowPickerDate(true) },
+                onPickTime = {addNoteViewModel.updateShowPickerTime(true)},
+                onInsertNote = {addNoteViewModel.insertNote(context)},
+                onRequestPermission = {launcher.launch(Manifest.permission.POST_NOTIFICATIONS) },
+                context
             )
             if (selectedTime != "00:00" || selectedDate != "00/00/0000") {
                 NotificationRow(selectedDate, selectedTime, Icons.Default.Notifications)
@@ -518,7 +435,13 @@ fun AddNoteScreen(
             }
             // PICK_KER_DATE
 
-            ComposeDatePicker()
+
+            val showPickerDate by addNoteViewModel.showPickerDate
+            CustomDatePicker(
+                showPickerDate = showPickerDate,
+                onClickPositiveButton = {addNoteViewModel.updateShowPickerDate(false)},
+               onClickNegativeButton = {addNoteViewModel.updateShowPickerDate(false)},
+                onSelectDate = { addNoteViewModel.updateSelectedDate(it)})
 
             LaunchedEffect(addNoteState.isSuccess, addNoteState.error) {
                 if (addNoteState.isSuccess) {

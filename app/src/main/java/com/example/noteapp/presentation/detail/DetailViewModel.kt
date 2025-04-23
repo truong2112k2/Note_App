@@ -103,6 +103,10 @@ class DetailViewModel @Inject constructor(
                 Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Saved new image: $newImagePath")
             }
 
+            if(showImage.value == false){
+              updateNoteUseCase.deleteImage(note.image.toString())
+                newImagePath = null
+            }
             val newNote = note.copy(
                 image = newImagePath,
                 dateAdd = currentDate
@@ -110,9 +114,10 @@ class DetailViewModel @Inject constructor(
 
             if (newNote.title.isEmpty() || newNote.content.isEmpty()) {
                 _detailState.value =
-                    DetailState(error = "ERROR: Fill in all fields. Please!")
+                    DetailState( error = "ERROR: Fill in all fields. Please!")
                 return@launch
             }
+
 
 
             if (originalNote != null) {
@@ -231,6 +236,13 @@ class DetailViewModel @Inject constructor(
     fun updateSelectedImageUri(updateValue: Uri?) {
         selectedImageUri.value = updateValue
 
+    }
+
+
+    val showImage = mutableStateOf(true)
+
+    fun updateShowImage(updateValue: Boolean){
+        showImage.value = updateValue
     }
 
 

@@ -109,7 +109,7 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-placeholder-material:0.30.1")
 
-    implementation("androidx.compose.material:material-icons-extended:1.7.8") // Use latest Compose version
+    implementation ("androidx.compose.material:material-icons-extended:1.6.0")
 
     implementation ("androidx.paging:paging-runtime:3.3.6")
 

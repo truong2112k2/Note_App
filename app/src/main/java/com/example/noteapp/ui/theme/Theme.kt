@@ -149,7 +149,7 @@ fun CustomNoteAppTheme(
     content: @Composable() () -> Unit
 ) {
 
-    val colors = if (useDarkTheme) lightScheme else darkScheme
+    val colors = if (useDarkTheme) darkScheme else lightScheme
 
     MaterialTheme(
         colorScheme = colors,

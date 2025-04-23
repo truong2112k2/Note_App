@@ -29,14 +29,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
+
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
@@ -90,26 +92,55 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @Composable
-fun LoadImageFromFile(context: Context, fileName: String) {
+fun LoadImageFromFile(
+    context: Context,
+    fileName: String,
+    showButtonDelete: Boolean,
+    showImage: Boolean,
+    onClickDelete: () -> Unit
+    ) {
     val file = File(File(context.filesDir, "image"), fileName)
 
-    if (file.exists()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp)
-                .clip(RoundedCornerShape(12.dp))
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(file),
-                contentDescription = null,
-                contentScale = ContentScale.Crop, // 👉 cắt ảnh vừa khung, đẹp
+    if(showImage){
+        if (file.exists()) {
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-            )
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .clip(RoundedCornerShape(12.dp))
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(file),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop, // 👉 cắt ảnh vừa khung, đẹp
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+                if(showButtonDelete){
+                    IconButton(
+                        onClick = {
+                            onClickDelete()
+                        },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                            .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
+                            .size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Remove image",
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+            }
         }
     }
-}
+
+    }
 
 @Composable
 fun DisplayEmptyListMessage(navController: NavController) {
@@ -171,6 +202,7 @@ fun DisplayEmptyListMessage(navController: NavController) {
                 .shadow(8.dp, shape = RoundedCornerShape(16.dp)) // 👈 thêm bóng đổ ở đây
                 .background(color = MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
                 .clip(RoundedCornerShape(16.dp))
+                .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(16.dp))
                 .padding(16.dp)
                 .clickable {
                     navController.navigate(Constants.ADD_NOTE_ROUTE)
@@ -597,7 +629,7 @@ fun DateTimeRow(
         // Time section (Right)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                imageVector = Icons.Default.AccessTime,
+                imageVector = Icons.Default.Schedule , // fix laij sau
                 contentDescription = "Time Icon",
                 tint = onPrimaryColor
             )

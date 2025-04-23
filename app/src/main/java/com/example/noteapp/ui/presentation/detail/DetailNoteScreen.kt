@@ -158,7 +158,7 @@ fun DetailNoteScreen(
             ) {
 
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(4.dp))
 
                 DateTimeRow(note)
 
@@ -181,10 +181,14 @@ fun DetailNoteScreen(
                         .background(Color.Transparent)
                 )
 
+
+                val showImage by detailViewModel.showImage
                 Spacer(Modifier.height(16.dp))
 
                 if (note.image != null && selectedImage == null) {
-                    LoadImageFromFile(context, note.image.toString())
+                    LoadImageFromFile(context, note.image.toString(), switchTopAppBar, showImage,
+                        onClickDelete = {detailViewModel.updateShowImage(false)}
+                        )
                 } else if (selectedImage != null) {
                     Box(
                         modifier = Modifier
@@ -223,7 +227,6 @@ fun DetailNoteScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                // ❌ Loại bỏ .weight(1f)
                 EditableTextContent(
                     text = note.content,
                     onTextChange = {
@@ -285,197 +288,6 @@ fun DetailNoteScreen(
 
     }
 
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .statusBarsPadding()
-//            .alpha(alpha)
-//    ) {
-//        GradientBackground()
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(16.dp)
-//                .verticalScroll(rememberScrollState()),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//
-//            ) {
-//
-//
-//            AnimatedContent(
-//                targetState = switchTopAppBar,
-//                transitionSpec = {
-//                    slideInHorizontally(
-//                        initialOffsetX = { fullWidth -> fullWidth }, // từ phải
-//                    ) + fadeIn() with
-//                            slideOutHorizontally(
-//                                targetOffsetX = { fullWidth -> -fullWidth }, // ra trái
-//                            ) + fadeOut()
-//                },
-//                label = "TopAppBarSwitch"
-//            ) { targetState ->
-//                if (targetState) {
-//                    EditTopAppBar(
-//                        detailViewModel = detailViewModel,
-//                        switchTopAppBar = switchTopAppBar,
-//                        launcherPickImage,
-//                        note,
-//                        context = context
-//                    )
-//                } else {
-//                    ViewTopAppBar(
-//                        detailViewModel = detailViewModel,
-//                        switchTopAppBar = switchTopAppBar,
-//                        navController = navController
-//                    )
-//                }
-//            }
-//
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//            DateTimeRow(note)
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//
-//            EditableTextContent(
-//                text = note.title,
-//                onTextChange = {
-//                    detailViewModel.updateNote(
-//                        note.copy(
-//                            title = it
-//                        )
-//                    )
-//                },
-//                switchTopAppBar,
-//                styleTextField = MaterialTheme.typography.headlineLarge,
-//                styleText = MaterialTheme.typography.displayMedium,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .background(Color.Transparent)
-//            )
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//
-//            if (note.image != null && selectedImage == null) {
-//
-//                LoadImageFromFile(context, note.image.toString())
-//
-//
-//            } else if (selectedImage != null) {
-//                Box(
-//                    modifier = Modifier
-//                        .height(280.dp)
-//                        .fillMaxWidth()
-//                        .clip(RoundedCornerShape(16.dp))
-//                ) {
-//                    Image(
-//                        painter = rememberAsyncImagePainter(selectedImage),
-//                        contentDescription = null,
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier
-//                            .matchParentSize()
-//                    )
-//
-//                    IconButton(
-//                        onClick = { detailViewModel.updateSelectedImageUri(null) },
-//                        modifier = Modifier
-//                            .align(Alignment.TopEnd)
-//                            .padding(8.dp)
-//                            .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
-//                            .size(32.dp)
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Close,
-//                            contentDescription = "Remove image",
-//                            tint = MaterialTheme.colorScheme.onPrimary,
-//                            modifier = Modifier.size(18.dp)
-//                        )
-//                    }
-//                }
-//            }
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//            CategoryAndPriorityMenu(detailViewModel, note, switchTopAppBar)
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//            EditableTextContent(
-//                note.content,
-//                onTextChange = {
-//                    detailViewModel.updateNote( // update content
-//                        note.copy(
-//                            content = it
-//                        )
-//                    )
-//                },
-//                switchTopAppBar,
-//                styleTextField =  MaterialTheme.typography.headlineSmall,
-//                styleText = MaterialTheme.typography.headlineSmall.copy(
-//                    fontSize = 21.sp
-//
-//                )
-//                ,
-//
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .weight(1f) // 👈 Giới hạn chiều cao
-//                    .verticalScroll(rememberScrollState())
-//                    .background(Color.Transparent),
-//            )
-//
-//
-//
-//
-//
-//            if (showTimePicker) {
-//                CustomTimePicker(
-//                    onConfirm = { timeState ->
-//                        val hour = timeState.hour
-//                        val minute = timeState.minute
-//                        detailViewModel.updateShowPickerTime(false)
-//
-//                        detailViewModel.updateNote(
-//                            note.copy(
-//                                timeNotify = String.format("%02d:%02d", hour, minute)
-//                            )
-//                        )
-//                    },
-//                    onDismiss = {
-//                        detailViewModel.updateShowPickerTime(false)
-//
-//                    }
-//                )
-//            }
-//
-//            val showDatePicker by detailViewModel.showPickerDate
-//            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-//
-//            CustomDatePicker(
-//                showDatePicker,
-//                onClickPositiveButton = { detailViewModel.updateShowPickerDate(false) },
-//                onClickNegativeButton = { detailViewModel.updateShowPickerDate(false) },
-//                onSelectDate = {
-//                    detailViewModel.updateNote(
-//                        note.copy(
-//                            dateNotify = it.format(formatter)
-//
-//                        )
-//                    )
-//
-//
-//                }
-//
-//            )
-//
-//        }
-//
-//
-//    }
-//
 
 
     LaunchedEffect(detailState) {

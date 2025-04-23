@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation
+package com.example.noteapp.presentation
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,10 +7,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.noteapp.common.Constants
-import com.example.noteapp.ui.presentation.add_note.AddNoteScreen
-import com.example.noteapp.ui.presentation.detail.DetailNoteScreen
-import com.example.noteapp.ui.presentation.home.HomeScreen
-import com.example.noteapp.ui.presentation.home.HomeViewModel
+import com.example.noteapp.presentation.add_note.AddNoteScreen
+import com.example.noteapp.presentation.detail.DetailNoteScreen
+import com.example.noteapp.presentation.home.HomeScreen
+import com.example.noteapp.presentation.home.HomeViewModel
 
 @SuppressLint("NewApi")
 @Composable

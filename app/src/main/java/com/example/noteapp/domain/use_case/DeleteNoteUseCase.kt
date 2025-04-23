@@ -7,6 +7,9 @@ import com.example.noteapp.domain.repository.INoteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
 
 class DeleteNoteUseCase @Inject constructor(
     private var noteRepository: INoteRepository,

@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation
+package com.example.noteapp.presentation
 
 import android.os.Build
 import androidx.annotation.RequiresApi

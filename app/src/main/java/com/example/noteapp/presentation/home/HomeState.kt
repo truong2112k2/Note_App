@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation.home
+package com.example.noteapp.presentation.home
 
 class HomeState (
     val isLoading: Boolean = false,

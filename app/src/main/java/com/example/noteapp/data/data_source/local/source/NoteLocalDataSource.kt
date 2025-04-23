@@ -1,9 +1,13 @@
 package com.example.noteapp.data.data_source.local.source
 
+import androidx.paging.PagingSource
 import com.example.noteapp.data.data_source.local.database.NoteDao
 import com.example.noteapp.data.data_source.local.database.NoteEntity
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class NoteLocalDataSource @Inject constructor(
     private val noteDao: NoteDao
 ) {
@@ -12,9 +16,6 @@ class NoteLocalDataSource @Inject constructor(
         return noteDao.insertNote(note)
     }
 
-    suspend fun getAllNotes(): List<NoteEntity> {
-        return noteDao.getAllNotes()
-    }
 
     suspend fun updateNote(note: NoteEntity): Int {
         return noteDao.updateNote(note)
@@ -31,4 +32,22 @@ class NoteLocalDataSource @Inject constructor(
     suspend fun getNoteByID(id: Long): NoteEntity? {
         return noteDao.getNoteByID(id)
     }
+
+    fun getAllList(): Flow<List<NoteEntity>> {
+        return noteDao.getAllList()
+    }
+
+    suspend fun searchNotesByTitle(title: String): Flow<List<NoteEntity>> {
+        return noteDao.searchNotesByTitle(title)
+    }
+
+    suspend fun searchNotesByDate(date: String): Flow<List<NoteEntity>> {
+        return noteDao.searchNotesByDate(date)
+
+    }
+
+    fun getPagedNotes(): PagingSource<Int, NoteEntity> {
+        return noteDao.getPagedNotes()
+    }
+
 }

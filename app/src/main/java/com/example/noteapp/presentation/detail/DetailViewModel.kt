@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation.detail
+package com.example.noteapp.presentation.detail
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -113,7 +113,8 @@ class DetailViewModel @Inject constructor(
             )
 
             if (newNote.title.isEmpty() || newNote.content.isEmpty()) {
-                _detailState.value = DetailState( error = "ERROR: Fill in all fields. Please!")
+                _detailState.value =
+                    DetailState( error = "ERROR: Fill in all fields. Please!")
                 return@launch
             }
 
@@ -147,9 +148,22 @@ class DetailViewModel @Inject constructor(
 
     //------------------------------------------------------------------///
 
-    fun deleteNoteById(id: Long){
+    fun deleteNoteById(note: Note) {
         viewModelScope.launch(Dispatchers.IO) {
-           val delete = deleteNoteUseCase.deleteNoteById(id)
+            val delete = deleteNoteUseCase.deleteNoteById(note.id)
+
+            if (delete == -1) {
+                Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete is failure")
+                return@launch
+            }
+
+//            if (note.image != null) {
+//                updateNoteUseCase.deleteImage(note.image)
+//                Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete Image successfully")
+//
+//            }
+            Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete successfully")
+
 
         }
     }

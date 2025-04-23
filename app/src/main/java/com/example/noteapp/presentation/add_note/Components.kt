@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation.add_note
+package com.example.noteapp.presentation.add_note
 
 import android.content.Context
 import android.os.Build

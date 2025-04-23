@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation.detail
+package com.example.noteapp.presentation.detail
 
 class DetailState(
     val isLoading: Boolean = false,

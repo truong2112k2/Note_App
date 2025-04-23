@@ -62,8 +62,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-  //  implementation (libs.androidx.work.runtime.ktx)
-
+    //  implementation (libs.androidx.work.runtime.ktx)
 
 
     implementation(libs.ui)
@@ -106,13 +105,12 @@ dependencies {
 
 
     implementation("androidx.compose.material3:material3:1.3.1")
-    implementation ("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
 
     implementation("com.google.accompanist:accompanist-placeholder-material:0.30.1")
 
     implementation ("androidx.compose.material:material-icons-extended:1.6.0")
 
-
-
+    implementation ("androidx.paging:paging-runtime:3.3.6")
 
 }

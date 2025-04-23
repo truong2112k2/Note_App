@@ -11,14 +11,21 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -31,7 +38,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,12 +55,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.noteapp.ui.presentation.CustomNavigation
-import com.example.noteapp.ui.presentation.add_note.AddNoteViewModel
-import com.example.noteapp.ui.presentation.home.HomeViewModel
+import com.example.noteapp.presentation.CustomNavigation
+import com.example.noteapp.presentation.add_note.AddNoteViewModel
+import com.example.noteapp.presentation.home.HomeViewModel
 import com.example.noteapp.ui.theme.CustomNoteAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.io.encoding.Base64
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -68,9 +72,47 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
 
+//            val a = listOf(
+//                "12312312",
+//                "4324234",
+//                "2312312321",
+//                "2312312312",
+//                "12312312",
+//                "4324234",
+//                "2312312321",
+//                "2312312312",
+//                "12312312",
+//                "4324234",
+//                "2312312321",
+//                "2312312312",
+//                "12312312",
+//                "4324234",
+//                "2312312321",
+//                "2312312312",
+//                "12312312",
+//                "4324234",
+//                "2312312321",
+//                "2312312312",
+//                "12312312",
+//                "4324234",
+//                "2312312321",
+//                "2312312312",
+//                "12312312",
+//                "4324234",
+//                "2312312321",
+//                "2312312312",
+//                "12312312",
+//                "4324234",
+//                "2312312321",
+//                "2312312312",
+//
+//
+//            )
+//            CustomGrid(a )
+
 //GreetingPreview()
 
-            val isDarkTheme by homeViewModel.isDarkTheme.collectAsState()
+            val isDarkTheme by homeViewModel.isDarkTheme
             val context = LocalContext.current
 
             CustomNoteAppTheme(useDarkTheme = isDarkTheme) {
@@ -128,7 +170,10 @@ fun GreetingPreview(addNoteViewModel: AddNoteViewModel = hiltViewModel()) {
 
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(16.dp).statusBarsPadding()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .statusBarsPadding()
 
     ) {
 
@@ -150,16 +195,39 @@ fun GreetingPreview(addNoteViewModel: AddNoteViewModel = hiltViewModel()) {
             )
         }
 
-        Text(stringResource(R.string.welcome_message), textAlign = TextAlign.Start, modifier =  Modifier.padding(8.dp))
-        Text(stringResource(R.string.note_feature_description), textAlign = TextAlign.Start,modifier =Modifier.padding(8.dp))
-        Text(stringResource(R.string.no_notes_yet), textAlign = TextAlign.Start,modifier =Modifier.padding(8.dp))
-        Text(stringResource(R.string.create_note_now), textAlign = TextAlign.Start,modifier =Modifier.padding(8.dp))
-        Text(stringResource(R.string.inspiration_message), textAlign = TextAlign.Start,modifier =Modifier.padding(8.dp))
+        Text(
+            stringResource(R.string.welcome_message),
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(8.dp)
+        )
+        Text(
+            stringResource(R.string.note_feature_description),
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(8.dp)
+        )
+        Text(
+            stringResource(R.string.no_notes_yet),
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(8.dp)
+        )
+        Text(
+            stringResource(R.string.create_note_now),
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(8.dp)
+        )
+        Text(
+            stringResource(R.string.inspiration_message),
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(8.dp)
+        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().background(Color.LightGray, RoundedCornerShape(16.dp)).clip(RoundedCornerShape(16.dp)).padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray, RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp))
+                .padding(16.dp),
         ) {
-
 
 
             Text(
@@ -169,10 +237,49 @@ fun GreetingPreview(addNoteViewModel: AddNoteViewModel = hiltViewModel()) {
             Spacer(modifier = Modifier.weight(1f)) // khoảng cách giữa image và text
 
             Image(
-                imageVector =  Icons.Default.KeyboardArrowRight, // thay bằng icon của bạn
+                imageVector = Icons.Default.KeyboardArrowRight, // thay bằng icon của bạn
                 contentDescription = "Note Icon",
                 modifier = Modifier.size(40.dp)
             )
+        }
+    }
+
+}
+
+@Composable
+fun CustomGrid(items: List<String>) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(8.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(
+            count = items.size,
+            span = { index ->
+                // Mỗi item thứ 5 sẽ chiếm 2 cột
+                if ((index + 1) % 5 == 0) {
+                    GridItemSpan(2)
+                } else {
+                    GridItemSpan(1)
+                }
+            }
+        ) { index ->
+            val item = items[index]
+            val isFullSpan = (index + 1) % 5 == 0
+
+            Box(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth()
+                    .height(if (isFullSpan) 120.dp else 80.dp)
+                    .background(
+                        if (isFullSpan) Color.Cyan else Color.LightGray,
+                        shape = RoundedCornerShape(8.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = item)
+            }
         }
     }
 

@@ -2,7 +2,7 @@ package com.example.noteapp.data.data_source.local.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
+import kotlin.random.Random
 
 
 @Entity(tableName = "notes")
@@ -17,3 +17,5 @@ data class NoteEntity(
     val timeNotify: String,
     val dateNotify: String // ngày tạo (ví dụ: "2025-04-08")
 )
+
+

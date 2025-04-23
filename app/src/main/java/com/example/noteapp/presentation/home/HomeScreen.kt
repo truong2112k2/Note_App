@@ -1,5 +1,6 @@
-package com.example.noteapp.ui.presentation.home
+package com.example.noteapp.presentation.home
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -13,11 +14,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,20 +45,24 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.noteapp.common.Constants
 import com.example.noteapp.ui.background.GradientBackground
-import com.example.noteapp.ui.presentation.detail.DisplayEmptyListMessage
+import com.example.noteapp.presentation.detail.DisplayEmptyListMessage
 import kotlinx.coroutines.delay
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
+@SuppressLint("NewApi")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(navController: NavController, context: Context, homeNoteViewModel: HomeViewModel) {
+fun HomeScreen(navController: NavController, context: Context, homeViewModel: HomeViewModel) {
 
-    val listNote by homeNoteViewModel.listNote.collectAsState()
-    val homeNoteState = homeNoteViewModel.homeState.value
+    val listNote by homeViewModel.listNote.collectAsState()
+    val homeNoteState = homeViewModel.homeState.value
     var animationVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        homeNoteViewModel.getAllNote()
+       homeViewModel.getAllNote()
 
     }
 
@@ -70,6 +79,7 @@ fun HomeScreen(navController: NavController, context: Context, homeNoteViewModel
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+
             if (homeNoteState.isLoading) {
                 Column(
                     modifier = Modifier
@@ -78,10 +88,12 @@ fun HomeScreen(navController: NavController, context: Context, homeNoteViewModel
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
                 }
             } else {
-                TopBarHomeScreen(navController, homeNoteViewModel)
+
+
+                TopBarHomeScreen(navController, homeViewModel)
 
                 LaunchedEffect(Unit) {
                     // Delay nhỏ để hiệu ứng lần lượt
@@ -90,12 +102,12 @@ fun HomeScreen(navController: NavController, context: Context, homeNoteViewModel
                 }
 
                 if (
-                    homeNoteState.isSuccess &&
-                    homeNoteViewModel.colors.size == listNote.size &&
-                    homeNoteViewModel.heights.size == listNote.size
+                    homeNoteState.isSuccess
+
                 ) {
-                    SearchBar(homeNoteViewModel)
+                    SearchBar(homeViewModel)
                     Spacer(Modifier.height(10.dp))
+                    
                     LazyVerticalStaggeredGrid(
                         columns = StaggeredGridCells.Fixed(2),
                         modifier = Modifier
@@ -107,9 +119,8 @@ fun HomeScreen(navController: NavController, context: Context, homeNoteViewModel
                         items(listNote.size) { index ->
 
                             val note = listNote[index]
-                            val color =
-                                homeNoteViewModel.colors[note.id.toInt()] ?: Color.Gray
-                            val height = homeNoteViewModel.heights[note.id.toInt()] ?: 40.dp
+                            val color = listNote[index].color
+                            val height = listNote[index].height
 
                             AnimatedVisibility(
                                 visible = animationVisible,
@@ -123,7 +134,7 @@ fun HomeScreen(navController: NavController, context: Context, homeNoteViewModel
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .shadow(4.dp, RoundedCornerShape(16.dp))
-                                        .background(color, RoundedCornerShape(16.dp))
+                                        .background(Color(color), RoundedCornerShape(16.dp))
                                         .clickable {
                                             navController.navigate("${Constants.DETAIL_NOTE_ROUTE}/${note.id}")
                                         }
@@ -140,14 +151,32 @@ fun HomeScreen(navController: NavController, context: Context, homeNoteViewModel
                                             overflow = TextOverflow.Ellipsis
                                         )
 
-                                        Spacer(modifier = Modifier.height(height))
+
+                                        val dateString = note.dateAdd // "02/11/2002"
+
+                                        val originalFormatter = DateTimeFormatter.ofPattern(
+                                            "dd/MM/yyyy",
+                                            Locale.ENGLISH
+                                        )
+                                        val localDate =
+                                            LocalDate.parse(dateString, originalFormatter)
+
+
+                                        val newFormatter = DateTimeFormatter.ofPattern(
+                                            "MMM dd, yyyy",
+                                            Locale.ENGLISH
+                                        )
+                                        val formattedDate = localDate.format(newFormatter)
+
+                                        Spacer(modifier = Modifier.height(height.dp))
 
                                         Text(
-                                            text = note.dateAdd,
+                                            text = formattedDate, // Sử dụng ngày đã định dạng
                                             style = MaterialTheme.typography.bodyMedium,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )
+
                                     }
                                 }
                             }

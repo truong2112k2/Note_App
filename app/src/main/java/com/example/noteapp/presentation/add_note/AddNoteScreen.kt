@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation.add_note
+package com.example.noteapp.presentation.add_note
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -69,8 +69,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.noteapp.common.Constants
 import com.example.noteapp.ui.background.GradientBackground
-import com.example.noteapp.ui.presentation.CustomDatePicker
-import com.example.noteapp.ui.presentation.CustomTimePicker
+import com.example.noteapp.presentation.CustomDatePicker
+import com.example.noteapp.presentation.CustomTimePicker
 
 @SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.O)

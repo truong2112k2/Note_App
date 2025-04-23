@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation.add_note
+package com.example.noteapp.presentation.add_note
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -185,7 +185,9 @@ class AddNoteViewModel @Inject constructor(
 
                 val currentTime = LocalDateTime.now()
                 val today = LocalDate.now()
-                val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
+
+                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
                 val currentDate = today.format(formatter) // thời gian thêm note
 
 

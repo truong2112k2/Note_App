@@ -1,4 +1,4 @@
-package com.example.noteapp.ui.presentation.detail
+package com.example.noteapp.presentation.detail
 
 import android.content.Context
 import android.net.Uri
@@ -200,7 +200,14 @@ fun DisplayEmptyListMessage(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ViewTopAppBar(detailViewModel: DetailViewModel, switchTopAppBar: Boolean, navController: NavController) {
+fun ViewTopAppBar(
+    onBackStack: () -> Unit,
+    onSwitchAppBar : () -> Unit,
+    onDeleteNote: () -> Unit
+//    detailViewModel: DetailViewModel,
+//    switchTopAppBar: Boolean,
+//    navController: NavController
+) {
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -220,7 +227,8 @@ fun ViewTopAppBar(detailViewModel: DetailViewModel, switchTopAppBar: Boolean, na
         },
         navigationIcon = {
             IconButton(onClick = {
-                navController.popBackStack()
+                //navController.popBackStack()
+                onBackStack()
 
             }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)
@@ -228,16 +236,18 @@ fun ViewTopAppBar(detailViewModel: DetailViewModel, switchTopAppBar: Boolean, na
         },
         actions = {
 
-            IconButton(onClick = {
+            IconButton(
+                onClick = {
 
-
-                //// delete
-            }) {
+                onDeleteNote()
+                }
+            ) {
                 Icon(Icons.Default.Delete, contentDescription = null)
             }
             Spacer(Modifier.width(8.dp))
             IconButton(onClick = {
-                detailViewModel.updateSwitchTopAppBar(!switchTopAppBar)
+              //  detailViewModel.updateSwitchTopAppBar(!switchTopAppBar)
+                onSwitchAppBar()
             }) {
                 Icon(Icons.Default.Refresh, contentDescription = null)
             }

@@ -1,6 +1,7 @@
 package com.example.noteapp.presentation.detail
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -79,14 +80,15 @@ fun DetailNoteScreen(
     val showTimePicker by detailViewModel.showPickerTime
     val note by detailViewModel.note.collectAsState()
 
-    val detailState by detailViewModel.detailState.collectAsState()
-    val showDialog by detailViewModel.showDialog
+    val updateState by detailViewModel.updateState.collectAsState()
+    val showDialogUpdate by detailViewModel.showDialogUpdate
+    val dialogUpdateMessage by detailViewModel.dialogUpdateMessage
 
-    val dialogMessage by detailViewModel.dialogMessage
+
     val switchTopAppBar by detailViewModel.switchTopAppBar
     val selectedImage by detailViewModel.selectedImageUri
 
-
+    val showDialogDelete by detailViewModel.showDiaLogDelete
     // LAUNCHER
     val launcherPickImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -150,8 +152,14 @@ fun DetailNoteScreen(
                             detailViewModel.updateSwitchTopAppBar(!switchTopAppBar)
                         },
                         onDeleteNote = {
-                            detailViewModel.deleteNoteById(note)
-                            navController.popBackStack()
+                            detailViewModel.deleteNoteById(
+                                context, note,
+                                onSuccess = {
+                                    navController.popBackStack()
+                                },
+
+                                )
+
                         }
                     )
                 }
@@ -234,7 +242,7 @@ fun DetailNoteScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                // ❌ Loại bỏ .weight(1f)
+
                 EditableTextContent(
                     text = note.content,
                     onTextChange = {
@@ -296,226 +304,35 @@ fun DetailNoteScreen(
 
     }
 
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .statusBarsPadding()
-//            .alpha(alpha)
-//    ) {
-//        GradientBackground()
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(16.dp)
-//                .verticalScroll(rememberScrollState()),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//
-//            ) {
-//
-//
-//            AnimatedContent(
-//                targetState = switchTopAppBar,
-//                transitionSpec = {
-//                    slideInHorizontally(
-//                        initialOffsetX = { fullWidth -> fullWidth }, // từ phải
-//                    ) + fadeIn() with
-//                            slideOutHorizontally(
-//                                targetOffsetX = { fullWidth -> -fullWidth }, // ra trái
-//                            ) + fadeOut()
-//                },
-//                label = "TopAppBarSwitch"
-//            ) { targetState ->
-//                if (targetState) {
-//                    EditTopAppBar(
-//                        detailViewModel = detailViewModel,
-//                        switchTopAppBar = switchTopAppBar,
-//                        launcherPickImage,
-//                        note,
-//                        context = context
-//                    )
-//                } else {
-//                    ViewTopAppBar(
-//                        detailViewModel = detailViewModel,
-//                        switchTopAppBar = switchTopAppBar,
-//                        navController = navController
-//                    )
-//                }
-//            }
-//
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//            DateTimeRow(note)
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//
-//            EditableTextContent(
-//                text = note.title,
-//                onTextChange = {
-//                    detailViewModel.updateNote(
-//                        note.copy(
-//                            title = it
-//                        )
-//                    )
-//                },
-//                switchTopAppBar,
-//                styleTextField = MaterialTheme.typography.headlineLarge,
-//                styleText = MaterialTheme.typography.displayMedium,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .background(Color.Transparent)
-//            )
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//
-//            if (note.image != null && selectedImage == null) {
-//
-//                LoadImageFromFile(context, note.image.toString())
-//
-//
-//            } else if (selectedImage != null) {
-//                Box(
-//                    modifier = Modifier
-//                        .height(280.dp)
-//                        .fillMaxWidth()
-//                        .clip(RoundedCornerShape(16.dp))
-//                ) {
-//                    Image(
-//                        painter = rememberAsyncImagePainter(selectedImage),
-//                        contentDescription = null,
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier
-//                            .matchParentSize()
-//                    )
-//
-//                    IconButton(
-//                        onClick = { detailViewModel.updateSelectedImageUri(null) },
-//                        modifier = Modifier
-//                            .align(Alignment.TopEnd)
-//                            .padding(8.dp)
-//                            .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
-//                            .size(32.dp)
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Close,
-//                            contentDescription = "Remove image",
-//                            tint = MaterialTheme.colorScheme.onPrimary,
-//                            modifier = Modifier.size(18.dp)
-//                        )
-//                    }
-//                }
-//            }
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//            CategoryAndPriorityMenu(detailViewModel, note, switchTopAppBar)
-//
-//            Spacer(Modifier.height(16.dp))
-//
-//            EditableTextContent(
-//                note.content,
-//                onTextChange = {
-//                    detailViewModel.updateNote( // update content
-//                        note.copy(
-//                            content = it
-//                        )
-//                    )
-//                },
-//                switchTopAppBar,
-//                styleTextField =  MaterialTheme.typography.headlineSmall,
-//                styleText = MaterialTheme.typography.headlineSmall.copy(
-//                    fontSize = 21.sp
-//
-//                )
-//                ,
-//
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .weight(1f) // 👈 Giới hạn chiều cao
-//                    .verticalScroll(rememberScrollState())
-//                    .background(Color.Transparent),
-//            )
-//
-//
-//
-//
-//
-//            if (showTimePicker) {
-//                CustomTimePicker(
-//                    onConfirm = { timeState ->
-//                        val hour = timeState.hour
-//                        val minute = timeState.minute
-//                        detailViewModel.updateShowPickerTime(false)
-//
-//                        detailViewModel.updateNote(
-//                            note.copy(
-//                                timeNotify = String.format("%02d:%02d", hour, minute)
-//                            )
-//                        )
-//                    },
-//                    onDismiss = {
-//                        detailViewModel.updateShowPickerTime(false)
-//
-//                    }
-//                )
-//            }
-//
-//            val showDatePicker by detailViewModel.showPickerDate
-//            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-//
-//            CustomDatePicker(
-//                showDatePicker,
-//                onClickPositiveButton = { detailViewModel.updateShowPickerDate(false) },
-//                onClickNegativeButton = { detailViewModel.updateShowPickerDate(false) },
-//                onSelectDate = {
-//                    detailViewModel.updateNote(
-//                        note.copy(
-//                            dateNotify = it.format(formatter)
-//
-//                        )
-//                    )
-//
-//
-//                }
-//
-//            )
-//
-//        }
-//
-//
-//    }
-//
 
 
-    LaunchedEffect(detailState) {
-        if (detailState.isSuccess) {
-            detailViewModel.updateDialogMessage("Note update successfully!")
-            detailViewModel.updateShowDialog(true)
-        } else if (detailState.error.isNotBlank()) {
-            detailViewModel.updateDialogMessage(detailState.error)
-            detailViewModel.updateShowDialog(true)
+    LaunchedEffect(updateState) {
+        if (updateState.isSuccess) {
+            detailViewModel.setDialogUpdateMessage("Note update successfully!")
+            detailViewModel.setShowDialogUpdate(true)
+        } else if (updateState.error.isNotBlank()) {
+            detailViewModel.setDialogUpdateMessage(updateState.error)
+            detailViewModel.setShowDialogUpdate(true)
         }
     }
 
-    if (showDialog) {
+    if (showDialogUpdate) {
         AlertDialog(
             onDismissRequest = {
-                detailViewModel.updateShowDialog(false)
+                detailViewModel.setShowDialogUpdate(false)
 
             },
             title = {
-                Text(text = if (detailState.isSuccess) "Success" else "Error")
+                Text(text = if (updateState.isSuccess) "Success" else "Error")
             },
             text = {
-                Text(dialogMessage)
+                Text(dialogUpdateMessage)
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        detailViewModel.updateShowDialog(false)
-                        if (detailState.isSuccess) {
+                        detailViewModel.setShowDialogUpdate(false)
+                        if (updateState.isSuccess) {
                             detailViewModel.updateSwitchTopAppBar(false)
                         }
                     }
@@ -526,6 +343,29 @@ fun DetailNoteScreen(
         )
     }
 
+    if(showDialogDelete){
+        AlertDialog(
+            onDismissRequest = {
+                detailViewModel.setShowDialogDelete(false)
+
+            },
+            title = {
+                Text(text = "Error")
+            },
+            text = {
+                Text(dialogUpdateMessage)
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        detailViewModel.setShowDialogDelete(false)
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 
 }
 

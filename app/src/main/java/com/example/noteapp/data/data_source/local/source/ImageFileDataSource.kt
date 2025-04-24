@@ -4,20 +4,44 @@ import android.content.Context
 import android.net.Uri
 import com.example.noteapp.data.utils.ImageUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
 class ImageFileDataSource @Inject constructor(@ApplicationContext val context: Context) {
 
     suspend fun saveImage(uri: Uri, fileName: String): String {
-        return ImageUtils.saveImageToInternalStorage(context, uri, fileName)
+
+        return withContext(Dispatchers.Default){
+            try{
+                ImageUtils.saveImageToInternalStorage(context, uri, fileName)
+
+            }catch (e: Exception){
+                ""
+            }
+        }
+
     }
 
     suspend fun getImage(fileName: String): File? {
-        return ImageUtils.readImageFile(context, fileName)
+        return withContext(Dispatchers.Default){
+            try {
+                ImageUtils.readImageFile(context, fileName)
+            }catch (e: Exception){
+                null
+            }
+
+        }
     }
 
     suspend fun deleteImage(fileName: String): Boolean {
-        return ImageUtils.deleteImageFile(context, fileName)
+        return withContext(Dispatchers.Default){
+            try{
+                ImageUtils.deleteImageFile(context, fileName)
+            }catch (e: Exception){
+                false
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -26,11 +28,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -45,7 +50,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +61,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.noteapp.presentation.CustomNavigation
@@ -72,45 +81,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
 
-//            val a = listOf(
-//                "12312312",
-//                "4324234",
-//                "2312312321",
-//                "2312312312",
-//                "12312312",
-//                "4324234",
-//                "2312312321",
-//                "2312312312",
-//                "12312312",
-//                "4324234",
-//                "2312312321",
-//                "2312312312",
-//                "12312312",
-//                "4324234",
-//                "2312312321",
-//                "2312312312",
-//                "12312312",
-//                "4324234",
-//                "2312312321",
-//                "2312312312",
-//                "12312312",
-//                "4324234",
-//                "2312312321",
-//                "2312312312",
-//                "12312312",
-//                "4324234",
-//                "2312312321",
-//                "2312312312",
-//                "12312312",
-//                "4324234",
-//                "2312312321",
-//                "2312312312",
-//
-//
-//            )
-//            CustomGrid(a )
 
-//GreetingPreview()
 
             val isDarkTheme by homeViewModel.isDarkTheme
             val context = LocalContext.current
@@ -284,3 +255,57 @@ fun CustomGrid(items: List<String>) {
     }
 
 }
+
+@Composable
+fun AppBarWithRoundButton() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp) // Tăng chiều cao để chứa FAB
+    ) {
+        // Custom AppBar with curved cutout
+        Canvas(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+            val width = size.width
+            val height = size.height
+
+            val cutoutRadius = 40.dp.toPx()
+            val cutoutCenter = Offset(width / 2, height)
+
+            val path = Path().apply {
+                moveTo(0f, 0f)
+                lineTo(0f, height)
+                arcTo(
+                    rect = Rect(
+                        left = cutoutCenter.x - cutoutRadius,
+                        top = cutoutCenter.y - cutoutRadius,
+                        right = cutoutCenter.x + cutoutRadius,
+                        bottom = cutoutCenter.y + cutoutRadius
+                    ),
+                    startAngleDegrees = 180f,
+                    sweepAngleDegrees = -180f,
+                    forceMoveTo = false
+                )
+                lineTo(width, height)
+                lineTo(width, 0f)
+                close()
+            }
+
+            drawPath(path, color = Color.Red)
+        }
+
+        // Circular Button over the cutout
+        FloatingActionButton(
+            onClick = { /* Handle click */ },
+            shape = CircleShape,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = (-20).dp)
+                .size(60.dp)
+                .zIndex(1f),
+            containerColor = MaterialTheme.colorScheme.secondary
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+        }
+    }
+}
+

@@ -3,8 +3,6 @@ package com.example.noteapp.domain.use_case
 import android.annotation.SuppressLint
 import android.util.Log
 import com.example.noteapp.common.Constants
-import com.example.noteapp.data.data_source.local.database.NoteEntity
-import com.example.noteapp.data.data_source.local.source.NoteLocalDataSource
 import com.example.noteapp.data.toNote
 import com.example.noteapp.domain.model.Note
 import com.example.noteapp.domain.repository.INoteRepository
@@ -20,12 +18,12 @@ import javax.inject.Singleton
 @Singleton
 class SearchNoteUseCase @Inject constructor(
     private val noteRepository: INoteRepository
-){
+) {
     @SuppressLint("SuspiciousIndentation")
     suspend fun searchNotesByTitle(title: String): Flow<List<Note>> {
-        return withContext(Dispatchers.IO){
-            try{
-            val listNoteEntity = noteRepository.searchNotesByTitle(title)
+        return withContext(Dispatchers.IO) {
+            try {
+                val listNoteEntity = noteRepository.searchNotesByTitle(title)
 
                 listNoteEntity.map {
                     it.map {
@@ -34,7 +32,7 @@ class SearchNoteUseCase @Inject constructor(
                 }
 
 
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
 
                 emptyFlow<List<Note>>()
@@ -43,15 +41,15 @@ class SearchNoteUseCase @Inject constructor(
     }
 
     suspend fun searchNotesByDate(date: String): Flow<List<Note>> {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             try {
-                val listNoteEntity =   noteRepository.searchNotesByDate(date)
+                val listNoteEntity = noteRepository.searchNotesByDate(date)
                 listNoteEntity.map {
                     it.map {
                         it.toNote()
                     }
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
                 emptyFlow<List<Note>>()
             }

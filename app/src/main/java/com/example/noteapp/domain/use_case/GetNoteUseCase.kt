@@ -28,7 +28,7 @@ class GetNoteUseCase @Inject constructor(
                 val noteConvert =  note?.toNote()
                 noteConvert
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
+                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, "Error getNoteById GetNoteUseCase ${e.message.toString()}")
                 null
             }
         }

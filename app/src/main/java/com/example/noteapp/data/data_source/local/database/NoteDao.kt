@@ -14,7 +14,6 @@ interface NoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: NoteEntity): Long
 
-
     @Update
     suspend fun updateNote(note: NoteEntity): Int
 
@@ -36,5 +35,9 @@ interface NoteDao {
 
     @Query("SELECT * FROM notes ORDER BY dateAdd DESC")
     fun getPagedNotes(): PagingSource<Int, NoteEntity>
+
+    @Query("DELETE FROM notes WHERE id IN (:ids)")
+    suspend fun deleteNotesByIds(ids: List<Long>): Int
+
 
 }

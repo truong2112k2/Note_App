@@ -1,4 +1,4 @@
-package com.example.noteapp.WorkManager
+package com.example.noteapp.work_manager
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

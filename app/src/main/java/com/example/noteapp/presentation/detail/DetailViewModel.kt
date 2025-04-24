@@ -26,10 +26,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -69,18 +69,21 @@ class DetailViewModel @Inject constructor(
     }
 
 
-    private val _detailState = MutableStateFlow<DetailState>(DetailState())
-    val detailState: StateFlow<DetailState> = _detailState.asStateFlow()
+    private val _updateSate = MutableStateFlow<UpdateState>(UpdateState())
+    val updateState: StateFlow<UpdateState> = _updateSate.asStateFlow()
+
 
 
     @SuppressLint("NewApi")
     fun updateNoteDatabase(note: Note, context: Context) {
-        _detailState.value = DetailState(isLoading = true)
+        _updateSate.value = UpdateState(isLoading = true)
 
         viewModelScope.launch(Dispatchers.IO) {
             val currentTime = LocalDateTime.now()
             val today = LocalDate.now()
-            val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
+        //    val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
             val currentDate = today.format(formatter)
 
             val originalNote = getNotesUseCase.getNoteById(note.id)
@@ -91,7 +94,7 @@ class DetailViewModel @Inject constructor(
                 if (!note.image.isNullOrEmpty()) {
                     val deleted = updateNoteUseCase.deleteImage(note.image.toString())
                     if (!deleted) {
-                        _detailState.value = DetailState(error = "ERROR: Can't Update Note")
+                        _updateSate.value = UpdateState(error = "ERROR: Can't Update Note")
                         return@launch
                     }
                 }
@@ -113,8 +116,8 @@ class DetailViewModel @Inject constructor(
             )
 
             if (newNote.title.isEmpty() || newNote.content.isEmpty()) {
-                _detailState.value =
-                    DetailState( error = "ERROR: Fill in all fields. Please!")
+                _updateSate.value =
+                    UpdateState( error = "ERROR: Fill in all fields. Please!")
                 return@launch
             }
 
@@ -131,15 +134,16 @@ class DetailViewModel @Inject constructor(
                     originalNote.dateNotify == newNote.dateNotify &&
                     originalNote.timeNotify == newNote.timeNotify
                 ) {
-                    _detailState.value =
-                        DetailState(error = "ERROR: Nothing Change")
+                    _updateSate.value =
+                        UpdateState(error = "ERROR: Nothing Change")
                     return@launch
                 }
             }
 
             updateNoteUseCase.updateNote(newNote)
-            scheduleNotifyUseCase.scheduleNotification(context, note)
-            _detailState.value = DetailState(isLoading = false, isSuccess = true)
+            Log.d("2312321", "ID note Update ${note.id}")
+            scheduleNotifyUseCase.scheduleNotification(context, note, note.id.toString())
+            _updateSate.value = UpdateState(isLoading = false, isSuccess = true)
 
             Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Update completed: ${newNote}")
         }
@@ -148,21 +152,44 @@ class DetailViewModel @Inject constructor(
 
     //------------------------------------------------------------------///
 
-    fun deleteNoteById(note: Note) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val delete = deleteNoteUseCase.deleteNoteById(note.id)
 
-            if (delete == -1) {
-                Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete is failure")
-                return@launch
+    val showDiaLogDelete = mutableStateOf(false)
+
+    fun setShowDialogDelete(updateValue: Boolean){
+        showDiaLogDelete.value = updateValue
+    }
+
+    fun deleteNoteById(context: Context,note: Note , onSuccess : () -> Unit  ) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            runCatching {
+                val delete = deleteNoteUseCase.deleteNoteById(note.id)
+                if (delete == -1) throw Exception("Delete failed in DB")
+
+                // Nếu có ảnh, xóa ảnh trong Firebase Storage
+                note.image?.let {
+                    updateNoteUseCase.deleteImage(it)
+                }
+
+                // Hủy notification
+                scheduleNotifyUseCase.cancelNoteNotification(
+                    context = context,
+                    noteId = note.id.toString()
+                )
+
+            }.onSuccess {
+                withContext(Dispatchers.Main){
+                    onSuccess()
+                }
+
+                Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete successfully")
+            }.onFailure { e ->
+
+                   showDialogUpdate.value = true
+
+                Log.e(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete failed: ${e.message}")
             }
 
-//            if (note.image != null) {
-//                updateNoteUseCase.deleteImage(note.image)
-//                Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete Image successfully")
-//
-//            }
-            Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete successfully")
 
 
         }
@@ -201,16 +228,16 @@ class DetailViewModel @Inject constructor(
     var selectedImageUri = mutableStateOf<Uri?>(null) // reset
 
 
-    var showDialog = mutableStateOf(false)
+    var showDialogUpdate = mutableStateOf(false)
 
-    var dialogMessage = mutableStateOf("") //reset
+    var dialogUpdateMessage = mutableStateOf("") //reset
 
-    fun updateShowDialog(updateValue: Boolean) {
-        showDialog.value = updateValue
+    fun setShowDialogUpdate(updateValue: Boolean) {
+        showDialogUpdate.value = updateValue
     }
 
-    fun updateDialogMessage(updateValue: String) {
-        dialogMessage.value = updateValue
+    fun setDialogUpdateMessage(updateValue: String) {
+        dialogUpdateMessage.value = updateValue
     }
 
 

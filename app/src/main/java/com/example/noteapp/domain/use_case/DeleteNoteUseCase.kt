@@ -27,4 +27,14 @@ class DeleteNoteUseCase @Inject constructor(
         }
     }
 
+    suspend fun deleteNotesByIds(ids: List<Long>): Int{
+        return withContext(Dispatchers.IO){
+            try{
+                noteRepository.deleteNotesByIds(ids)
+            }catch (e: Exception){
+                -1
+            }
+        }
+    }
+
 }

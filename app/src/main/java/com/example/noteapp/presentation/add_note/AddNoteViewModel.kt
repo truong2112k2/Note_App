@@ -20,13 +20,11 @@ import com.example.noteapp.ui.theme.high
 import com.example.noteapp.ui.theme.low
 import com.example.noteapp.ui.theme.medium
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 
 
@@ -210,14 +208,17 @@ class AddNoteViewModel @Inject constructor(
                     timeNotify = selectedTime.value,
                     dateNotify = selectedDate.value
                 )
-                val insertNote = noteUseCase.insertNote(note)
-                if (insertNote.toInt() == -1) {
+                val idNoteInsert = noteUseCase.insertNote(note)
+                if (idNoteInsert.toInt() == -1) {
                     _addNoteState.value = AddNoteState(error = "Insert failed")
                     Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
 
                 } else {
+                    Log.d("2312321","note ban dau in add note vm ${note.id}")
+                    Log.d("2312321","note ban dau theo insert ${idNoteInsert}")
+
                     _addNoteState.value = AddNoteState(isSuccess = true)
-                    scheduleNotify.scheduleNotification(context, note)
+                    scheduleNotify.scheduleNotification(context, note, idNoteInsert.toString())
                     Log.d(
                         Constants.ERROR_TAG_ADD_NOTE_SCREEN,
                         _addNoteState.value.isSuccess.toString()

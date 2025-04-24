@@ -7,10 +7,8 @@ import androidx.annotation.RequiresApi
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.noteapp.WorkManager.NotificationWorker
-import com.example.noteapp.common.Constants
 import com.example.noteapp.data.data_source.local.database.NoteEntity
-import com.example.noteapp.domain.model.Note
+import com.example.noteapp.work_manager.NotificationWorker
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -22,26 +20,49 @@ import javax.inject.Singleton
 @Singleton
 class WorkManagerDataSource @Inject constructor() {
 
+
     @RequiresApi(Build.VERSION_CODES.O)
-     fun scheduleNotification(context: Context, note: NoteEntity) {
-        Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN, "scheduleNotification")
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.getDefault())
-        val dateTimeString = "${note.dateNotify} ${note.timeNotify}" // ví dụ: "12/04/2025 14:30"
-        val localDateTime = LocalDateTime.parse(dateTimeString, formatter)
-        val delayMillis = Duration.between(LocalDateTime.now(), localDateTime).toMillis()
+    fun scheduleNotification(context: Context, note: NoteEntity, noteId: String) {
 
-        if (delayMillis <= 0) return // thời gian đã qua
+        try {
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.getDefault())
+            val dateTimeString = "${note.dateNotify} ${note.timeNotify}"
+            val localDateTime = LocalDateTime.parse(dateTimeString, formatter)
+            val delayMillis = Duration.between(LocalDateTime.now(), localDateTime).toMillis()
 
-        val data = Data.Builder()
-            .putString("note_title", note.title)
-            .putString("note_time", note.timeNotify)
-            .build()
-        val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
-            .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
-            .setInputData(data)
-            .build()
-        WorkManager.getInstance(context ).enqueue(workRequest)
+            if (delayMillis <= 0) return
+
+            val data = Data.Builder()
+                .putString("note_title", note.title)
+                .putString("note_time", note.timeNotify)
+                .build()
+
+            val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+                .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
+                .setInputData(data)
+                .addTag(noteId) // 💡 Gán tag theo id của note
+                .build()
+
+            WorkManager.getInstance(context).enqueue(workRequest)
+            Log.d("Check Note Id", "Note id scheduleNotification ${note.id}")
+        } catch (e: Exception) {
+            Log.d("ADSAD", e.message.toString())
+        }
+
+
     }
 
+
+    fun cancelNoteNotification(context: Context, noteId: String) {
+
+        try {
+            WorkManager.getInstance(context).cancelAllWorkByTag(noteId)
+        } catch (e: Exception) {
+            Log.d("12321321", e.message.toString())
+
+        }
+
+
+    }
 
 }

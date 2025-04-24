@@ -17,7 +17,8 @@ data class Note (
         val timeNotify: String,// Unix timestamp for notification time
         val dateNotify: String, //  ngày tạo (ví dụ: "2025-04-08")
         val height: Int = Random.nextInt(20..100), // Chiều cao ngẫu nhiên từ 100 đến 400
-        val color: Int = getRandomLightColorExcludingBlue() // Hàm tạo màu ngẫu nhiên
+        val isSelected : Boolean = false
+
 
 ){
 

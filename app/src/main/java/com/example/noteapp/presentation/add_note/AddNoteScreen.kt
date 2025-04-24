@@ -310,7 +310,7 @@ fun AddNoteScreen(
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                //singleLine = false,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
@@ -321,6 +321,8 @@ fun AddNoteScreen(
                 ),
 
                 textStyle = TextStyle(fontSize = 40.sp, color = onPrimaryColor),
+                maxLines = 1,
+                minLines = 1
 
                 )
             Spacer(Modifier.height(8.dp))

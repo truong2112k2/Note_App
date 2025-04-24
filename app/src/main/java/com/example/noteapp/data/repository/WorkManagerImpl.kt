@@ -15,7 +15,12 @@ class WorkManagerImpl @Inject constructor(
     private val workManagerDataSource: WorkManagerDataSource
 ): IWorkManager {
     @SuppressLint("NewApi")
-    override suspend fun scheduleNotification(context: Context, note: NoteEntity) {
-        workManagerDataSource.scheduleNotification(context, note)
+    override suspend fun scheduleNotification(context: Context, note: NoteEntity, noteId: String) {
+
+        workManagerDataSource.scheduleNotification(context, note, noteId)
+    }
+
+    override suspend fun cancelNoteNotification(context: Context, noteId: String) {
+        workManagerDataSource.cancelNoteNotification(context, noteId)
     }
 }

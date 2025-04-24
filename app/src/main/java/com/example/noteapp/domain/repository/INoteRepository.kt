@@ -18,7 +18,9 @@ interface INoteRepository {
 
     suspend fun searchNotesByDate(date: String): Flow<List<NoteEntity>>
 
-
     fun getPagedNotes(): PagingSource<Int, NoteEntity>
+
+    suspend fun deleteNotesByIds(ids: List<Long>): Int
+
 
 }

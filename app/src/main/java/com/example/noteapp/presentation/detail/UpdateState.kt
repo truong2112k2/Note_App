@@ -1,6 +1,6 @@
 package com.example.noteapp.presentation.detail
 
-class DetailState(
+class UpdateState(
     val isLoading: Boolean = false,
     var isSuccess: Boolean = false,
     var error: String = ""

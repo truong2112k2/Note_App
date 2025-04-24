@@ -2,6 +2,9 @@ package com.example.noteapp.presentation.home
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -13,20 +16,35 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,12 +56,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role.Companion.Checkbox
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.noteapp.common.Constants
+import com.example.noteapp.domain.model.Note
 import com.example.noteapp.ui.background.GradientBackground
 import com.example.noteapp.presentation.detail.DisplayEmptyListMessage
 import kotlinx.coroutines.delay
@@ -61,6 +84,7 @@ fun HomeScreen(navController: NavController, context: Context, homeViewModel: Ho
     val homeNoteState = homeViewModel.homeState.value
     var animationVisible by remember { mutableStateOf(false) }
 
+    val isListMode by homeViewModel.isListMode
     LaunchedEffect(Unit) {
        homeViewModel.getAllNote()
 
@@ -105,82 +129,94 @@ fun HomeScreen(navController: NavController, context: Context, homeViewModel: Ho
                     homeNoteState.isSuccess
 
                 ) {
+
                     SearchBar(homeViewModel)
                     Spacer(Modifier.height(10.dp))
-                    
-                    LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(2),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp),
-                        verticalItemSpacing = 8.dp,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(listNote.size) { index ->
 
-                            val note = listNote[index]
-                            val color = listNote[index].color
-                            val height = listNote[index].height
+                    Column {
+                        LazyVerticalStaggeredGrid(
+                            columns = StaggeredGridCells.Fixed(2),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(8.dp),
+                            verticalItemSpacing = 8.dp,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(listNote.size) { index ->
 
-                            AnimatedVisibility(
-                                visible = animationVisible,
-                                enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
-                                    initialOffsetY = { it / 2 },
-                                    animationSpec = tween(500)
-                                ),
-                                exit = fadeOut()
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .shadow(4.dp, RoundedCornerShape(16.dp))
-                                        .background(Color(color), RoundedCornerShape(16.dp))
-                                        .clickable {
-                                            navController.navigate("${Constants.DETAIL_NOTE_ROUTE}/${note.id}")
-                                        }
+                                val note = listNote[index]
+
+
+                                AnimatedVisibility(
+                                    visible = animationVisible,
+                                    enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
+                                        initialOffsetY = { it / 2 },
+                                        animationSpec = tween(500)
+                                    ),
+                                    exit = fadeOut()
                                 ) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(10.dp)
-                                    ) {
-                                        Text(
-                                            text = note.title,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            maxLines = 3,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
 
-
-                                        val dateString = note.dateAdd // "02/11/2002"
-
-                                        val originalFormatter = DateTimeFormatter.ofPattern(
-                                            "dd/MM/yyyy",
-                                            Locale.ENGLISH
-                                        )
-                                        val localDate =
-                                            LocalDate.parse(dateString, originalFormatter)
-
-
-                                        val newFormatter = DateTimeFormatter.ofPattern(
-                                            "MMM dd, yyyy",
-                                            Locale.ENGLISH
-                                        )
-                                        val formattedDate = localDate.format(newFormatter)
-
-                                        Spacer(modifier = Modifier.height(height.dp))
-
-                                        Text(
-                                            text = formattedDate, // Sử dụng ngày đã định dạng
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-
+                                    AnimatedContent(
+                                        targetState = isListMode,
+                                        label = "ModeSwitcherAnimation"
+                                    ) { listMode ->
+                                        if (listMode) {
+                                            NoteItemSelected(
+                                                note = note,
+                                                isSelected = homeViewModel.selectedNoteIds.value.contains(note.id),
+                                                onToggleSelect = { homeViewModel.toggleSelection(note.id) }
+                                            )
+                                        } else {
+                                            NoteItem(
+                                                note,
+                                                onClickItem = {
+                                                    navController.navigate("${Constants.DETAIL_NOTE_ROUTE}/${note.id}")
+                                                }
+                                            )
+                                        }
                                     }
+
+
                                 }
                             }
+
                         }
+
+                       if(isListMode){
+                           FloatingActionButton(
+                               onClick = {
+
+                                   homeViewModel.deleteNotes(context)
+
+                               },
+                               containerColor = MaterialTheme.colorScheme.onPrimary,
+                               contentColor = Color.White,
+                               modifier = Modifier
+                                   .align(alignment = Alignment.CenterHorizontally)
+                                   .padding(20.dp)
+                                   .size(65.dp)
+                           ) {
+
+                               Icon(Icons.Default.DeleteForever, contentDescription = "Delete",
+                                   tint = MaterialTheme.colorScheme.primary )
+                           }
+                       }else{
+                           FloatingActionButton(
+                               onClick = {
+                                   navController.navigate(Constants.ADD_NOTE_ROUTE)
+
+                               },
+                               containerColor = MaterialTheme.colorScheme.onPrimary,
+                               contentColor = Color.White,
+                               modifier = Modifier
+                                   .align(alignment = Alignment.CenterHorizontally)
+                                   .padding(20.dp)
+                                   .size(65.dp)
+                           ) {
+                               Icon(Icons.Default.Add, contentDescription = "Add",
+                                   tint = MaterialTheme.colorScheme.primary )
+                           }
+                       }
 
                     }
                 } else {
@@ -212,3 +248,118 @@ fun HomeScreen(navController: NavController, context: Context, homeViewModel: Ho
 
 
 
+@Composable
+fun NoteItem(
+    note: Note,
+    onClickItem:()->Unit) {
+
+
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                onClickItem()
+            }
+        ,
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(
+            alpha = 0.65f
+
+        ))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(4.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text =note.title,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(note.height.dp))
+            Text(
+                text =note. content,
+                fontWeight = FontWeight.Normal,
+                color =  Color.Black,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+
+        }
+    }
+}
+
+
+@Composable
+fun NoteItemSelected(
+    note: Note,
+    isSelected: Boolean,
+    onToggleSelect: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {  onToggleSelect() }
+        ,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White.copy(alpha = 0.65f)
+        )
+    ) {
+        Column {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = { onToggleSelect()},
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = Color.Transparent,        // màu nền khi đã chọn
+                        uncheckedColor = MaterialTheme.colorScheme.onPrimary,        // màu viền khi chưa chọn
+                        checkmarkColor =MaterialTheme.colorScheme.onPrimary       // màu của dấu tick
+                    )
+                )
+
+
+            }
+        }
+        Column(modifier = Modifier.padding(16.dp)) {
+
+
+
+
+                Text(
+                    text = note.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(note.height.dp))
+                Text(
+                    text = note.content,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+            }
+
+    }
+}

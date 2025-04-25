@@ -81,24 +81,33 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val currentTime = LocalDateTime.now()
             val today = LocalDate.now()
-        //    val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-
             val currentDate = today.format(formatter)
 
             val originalNote = getNotesUseCase.getNoteById(note.id)
+
+
+
             var newImagePath: String? = note.image
 
-            selectedImageUri.value?.let { uri ->
-                // Nếu có ảnh mới được chọn
-                if (!note.image.isNullOrEmpty()) {
-                    val deleted = updateNoteUseCase.deleteImage(note.image.toString())
+            val hasNewImage = selectedImageUri.value != null
+
+//  Xử lý ảnh mới được chọn
+            if (hasNewImage) {
+                val uri = selectedImageUri.value!!
+
+                // Nếu ghi chú đã có ảnh → xóa ảnh cũ
+                if (originalNote?.image != "null") {
+                //    val deleted = updateNoteUseCase.deleteImage(originalNote?.image.toString())
+                    val deleted = updateNoteUseCase.deleteImage(originalNote!!.image!!)
+
                     if (!deleted) {
-                        _updateSate.value = UpdateState(error = "ERROR: Can't Update Note")
+                        _updateSate.value = UpdateState(error = "ERROR: Can't delete old image")
                         return@launch
                     }
                 }
 
+                // Lưu ảnh mới vào file
                 newImagePath = addNoteUseCase.saveImageToFileDir(
                     uri,
                     currentTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ".Jpg"
@@ -106,23 +115,26 @@ class DetailViewModel @Inject constructor(
                 Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Saved new image: $newImagePath")
             }
 
-            if(showImage.value == false){
-              updateNoteUseCase.deleteImage(note.image.toString())
+
+            //  Nếu người dùng chọn ẩn ảnh (bỏ ảnh)
+            if (showImage.value == false) {
+                updateNoteUseCase.deleteImage(note.image.toString())
                 newImagePath = null
             }
+
+            //  Tạo bản ghi chú mới đã được chỉnh sửa
             val newNote = note.copy(
                 image = newImagePath,
                 dateAdd = currentDate
             )
 
+            //  Kiểm tra các trường bắt buộc
             if (newNote.title.isEmpty() || newNote.content.isEmpty()) {
-                _updateSate.value =
-                    UpdateState( error = "ERROR: Fill in all fields. Please!")
+                _updateSate.value = UpdateState(error = "ERROR: Fill in all fields. Please!")
                 return@launch
             }
 
-
-
+            //  Kiểm tra nếu không có thay đổi gì
             if (originalNote != null) {
                 if (
                     selectedImageUri.value == null &&
@@ -134,23 +146,24 @@ class DetailViewModel @Inject constructor(
                     originalNote.dateNotify == newNote.dateNotify &&
                     originalNote.timeNotify == newNote.timeNotify
                 ) {
-                    _updateSate.value =
-                        UpdateState(error = "ERROR: Nothing Change")
+                    _updateSate.value = UpdateState(error = "ERROR: Nothing Change")
                     return@launch
                 }
             }
 
+            // 👉 Cập nhật ghi chú
             updateNoteUseCase.updateNote(newNote)
             Log.d("2312321", "ID note Update ${note.id}")
-            scheduleNotifyUseCase.scheduleNotification(context, note, note.id.toString())
-            _updateSate.value = UpdateState(isLoading = false, isSuccess = true)
 
-            Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Update completed: ${newNote}")
+            // 👉 Lên lịch thông báo nếu có
+            scheduleNotifyUseCase.scheduleNotification(context, note, note.id.toString())
+
+            _updateSate.value = UpdateState(isLoading = false, isSuccess = true)
+            Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Update completed: $newNote")
         }
     }
 
 
-    //------------------------------------------------------------------///
 
 
     val showDiaLogDelete = mutableStateOf(false)

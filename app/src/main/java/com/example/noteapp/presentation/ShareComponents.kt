@@ -1,5 +1,6 @@
 package com.example.noteapp.presentation
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateDp
@@ -8,6 +9,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -140,3 +142,37 @@ fun CustomTimePicker(
     }
 }
 
+@Composable
+fun ConfirmDeleteDialog(
+    context: Context,
+    title: String,
+    message: String,
+    positiveText: String,
+    negativeText: String,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit = {}
+) {
+    android.app.AlertDialog.Builder(context)
+        .setTitle(title)
+        .setMessage(message)
+        .setPositiveButton(positiveText) { dialog, _ ->
+            onConfirm()
+
+
+        }
+        .setNegativeButton(negativeText) { dialog, _ ->
+            onCancel()
+
+        }
+        .setCancelable(true)
+        .show()
+
+
+}
+
+
+@Composable
+fun CreateATitle(title: String){
+    Text(title , style = MaterialTheme.typography.displayMedium, color = MaterialTheme.colorScheme.onPrimary)
+
+}

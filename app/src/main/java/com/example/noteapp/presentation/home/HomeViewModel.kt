@@ -14,12 +14,16 @@ import com.example.noteapp.domain.use_case.SearchNoteUseCase
 import com.example.noteapp.domain.use_case.UpdateNoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getNotesUseCase: GetNoteUseCase,
@@ -30,6 +34,7 @@ class HomeViewModel @Inject constructor(
 
 
 ) : ViewModel() {
+
 
 
     val showSearchView = mutableStateOf(false)
@@ -46,12 +51,10 @@ class HomeViewModel @Inject constructor(
     val listNote: StateFlow<List<Note>> = _listNote.asStateFlow()
 
     val isDarkTheme = mutableStateOf(false)
-    private val _homeState = mutableStateOf(HomeState())
-
     val isListMode = mutableStateOf(false)
 
-
-    val homeState: State<HomeState> = _homeState
+    private val _getListState = mutableStateOf(HomeState())
+    val getListState: State<HomeState> = _getListState
 
 
     fun updateShowDatePicker(updateValue: Boolean) {
@@ -79,17 +82,17 @@ class HomeViewModel @Inject constructor(
 
         Log.d("isFirstLoad", isFirstLoad.toString())
         if (isFirstLoad) {
-            _homeState.value = HomeState(isLoading = true)
+            _getListState.value = HomeState(isLoading = true)
             isFirstLoad = false
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             getNotesUseCase.getAllNote().collect { notes ->
                 if (notes.isEmpty()) {
-                    _homeState.value = HomeState(error = "Can't get data from database")
+                    _getListState.value = HomeState(error = "Can't get data from database")
                 } else {
                     _listNote.value = notes
-                    _homeState.value = HomeState(
+                    _getListState.value = HomeState(
                         isLoading = false,
                         isSuccess = true
                     )
@@ -98,8 +101,30 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    fun searchNoteByTitle(title: String) {
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
+    init {
+        viewModelScope.launch {
+            searchQuery
+                .debounce(400)
+                .distinctUntilChanged()
+                .collect { query ->
+                    if (query.isBlank()) {
+                        getAllNote()
+                    } else {
+                        searchNoteByTitle(query)
+                    }
+                }
+        }
+    }
+
+
+    private fun searchNoteByTitle(title: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
             searchNoteUseCase.searchNotesByTitle(title).collect { notes ->
@@ -156,22 +181,41 @@ class HomeViewModel @Inject constructor(
     fun clearSelection() {
         _selectedNoteIds.value = emptySet()
     }
+
+
+    private val _deleteNotesState = mutableStateOf(HomeState())
+    val deleteNotesState: State<HomeState> = _deleteNotesState
+
+
+    val isShowConfirmDeleteDialog = mutableStateOf(false)
+
+    fun updateShowConfirmDeleteDialog(updateValue: Boolean){
+        isShowConfirmDeleteDialog.value = updateValue
+
+    }
+
+
+
+
+
     fun deleteNotes(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val failedDeleteImages = mutableListOf<String>()
             val failedCancelNotifications = mutableListOf<String>()
 
-            if (_selectedNoteIds.value.isEmpty()) {
-                Log.d("CheckSelected", "Không có ghi chú nào được chọn.")
-                return@launch
-            }
-
             val noteIds = _selectedNoteIds.value.toList()
-            val listImg = _listNote.value.filter { it.id in noteIds}.map { it.image }
-            val deleteCount = deleteNoteUseCase.deleteNotesByIds(noteIds)
+            val listImg = _listNote.value.filter {
+                it.id in noteIds
+            }.map {
+                it.image
+            } // lấy ra list link duong dan image trc khi xoa  casc note
+            val deleteCount = deleteNoteUseCase.deleteNotesByIds(noteIds) // xoa cac note
 
             if (deleteCount <= 0) {
                 Log.e("DeleteNotes", "Xóa ghi chú thất bại.")
+                _deleteNotesState.value = HomeState(error = "Delete failed")
+
+
                 return@launch
             }
 
@@ -183,6 +227,8 @@ class HomeViewModel @Inject constructor(
 
                 } catch (e: Exception) {
                     failedDeleteImages.add(fileName.toString())
+
+
                     Log.e("DeleteImageError", "Không thể xóa ảnh cho noteId: $fileName", e)
                 }
             }
@@ -200,13 +246,19 @@ class HomeViewModel @Inject constructor(
             // Tổng kết lỗi
             if (failedDeleteImages.isNotEmpty()) {
                 Log.e("Summary", "Xóa ảnh thất bại cho: $failedDeleteImages")
+                _deleteNotesState.value = HomeState(error = "Delete failed")
+
+
             }
 
             if (failedCancelNotifications.isNotEmpty()) {
                 Log.e("Summary", "Hủy thông báo thất bại cho: $failedCancelNotifications")
-            }
+                _deleteNotesState.value = HomeState(error = "Delete failed")
 
-            Log.d("CheckSelected", "Xóa thành công ${deleteCount} ghi chú.")
+            }
+            _deleteNotesState.value = HomeState(isSuccess = true)
+
+          //  Log.d("CheckSelected", "Xóa thành công ${deleteCount} ghi chú.")
         }
     }
 

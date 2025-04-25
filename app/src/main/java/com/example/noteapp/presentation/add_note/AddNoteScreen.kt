@@ -87,7 +87,7 @@ fun AddNoteScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
+
     ) {
         GradientBackground()
         Column(
@@ -316,7 +316,7 @@ fun AddNoteScreen(
                     unfocusedBorderColor = Color.Transparent,
                     disabledBorderColor = Color.Transparent,
                     errorBorderColor = Color.Transparent,
-                    cursorColor = onPrimaryColor // 👈 Màu con trỏ
+                    cursorColor = onPrimaryColor
 
                 ),
 

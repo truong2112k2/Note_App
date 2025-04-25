@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
@@ -84,6 +85,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.noteapp.R
 import com.example.noteapp.common.Constants
 import com.example.noteapp.domain.model.Note
+import com.example.noteapp.presentation.CreateATitle
+
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -236,7 +239,8 @@ fun DisplayEmptyListMessage(navController: NavController) {
 fun ViewTopAppBar(
     onBackStack: () -> Unit,
     onSwitchAppBar : () -> Unit,
-    onDeleteNote: () -> Unit
+    onDeleteNote: () -> Unit,
+
 ) {
    // val deleteState by detailViewModel.deleteState.collectAsState()
 
@@ -247,23 +251,27 @@ fun ViewTopAppBar(
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         ),
         title = {
-            Text(
-                "Detail Note",
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
         },
         navigationIcon = {
-            IconButton(onClick = {
-                //navController.popBackStack()
-                onBackStack()
 
-            }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = null)
+            Row(
+
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = {
+                    //navController.popBackStack()
+                    onBackStack()
+
+                }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = null)
+                }
+
+                Spacer(Modifier.width(20.dp))
+
+                CreateATitle("Detail")
             }
+
+
         },
         actions = {
 
@@ -277,10 +285,9 @@ fun ViewTopAppBar(
             }
             Spacer(Modifier.width(8.dp))
             IconButton(onClick = {
-              //  detailViewModel.updateSwitchTopAppBar(!switchTopAppBar)
                 onSwitchAppBar()
             }) {
-                Icon(Icons.Default.Refresh, contentDescription = null)
+                Icon(Icons.Default.Update, contentDescription = null)
             }
         }
     )

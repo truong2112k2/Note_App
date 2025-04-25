@@ -1,7 +1,6 @@
 package com.example.noteapp.presentation.detail
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -59,9 +58,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.noteapp.ui.background.GradientBackground
+import com.example.noteapp.presentation.ConfirmDeleteDialog
 import com.example.noteapp.presentation.CustomDatePicker
 import com.example.noteapp.presentation.CustomTimePicker
+import com.example.noteapp.presentation.home.ShowConfirmDeleteDialog
+import com.example.noteapp.ui.background.GradientBackground
 import java.time.format.DateTimeFormatter
 
 @SuppressLint("DefaultLocale")
@@ -114,7 +115,6 @@ fun DetailNoteScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .alpha(alpha)
     ) {
         GradientBackground()
@@ -152,15 +152,12 @@ fun DetailNoteScreen(
                             detailViewModel.updateSwitchTopAppBar(!switchTopAppBar)
                         },
                         onDeleteNote = {
-                            detailViewModel.deleteNoteById(
-                                context, note,
-                                onSuccess = {
-                                    navController.popBackStack()
-                                },
 
-                                )
 
-                        }
+                            detailViewModel.setShowDialogDelete(true)
+
+
+                        },
                     )
                 }
             }
@@ -202,8 +199,8 @@ fun DetailNoteScreen(
 
                 if (note.image != null && selectedImage == null) {
                     LoadImageFromFile(context, note.image.toString(), switchTopAppBar, showImage,
-                        onClickDelete = {detailViewModel.updateShowImage(false)}
-                        )
+                        onClickDelete = { detailViewModel.updateShowImage(false) }
+                    )
                 } else if (selectedImage != null) {
                     Box(
                         modifier = Modifier
@@ -343,26 +340,22 @@ fun DetailNoteScreen(
         )
     }
 
-    if(showDialogDelete){
-        AlertDialog(
-            onDismissRequest = {
-                detailViewModel.setShowDialogDelete(false)
+    if (showDialogDelete) {
+        ConfirmDeleteDialog(
+            context = context,
+            title = "Notification",
+            message = "Are you sure about delete this note?",
+            positiveText = "Ok",
+            negativeText = "Cancel",
+            onConfirm = {
+                detailViewModel.deleteNoteById(context, note, onSuccess = {
+                    navController.popBackStack()
 
-            },
-            title = {
-                Text(text = "Error")
-            },
-            text = {
-                Text(dialogUpdateMessage)
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        detailViewModel.setShowDialogDelete(false)
-                    }
-                ) {
-                    Text("OK")
                 }
+                )
+            },
+            onCancel = {
+                detailViewModel.setShowDialogDelete(false)
             }
         )
     }

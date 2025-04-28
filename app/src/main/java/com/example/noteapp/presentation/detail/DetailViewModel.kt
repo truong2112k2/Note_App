@@ -42,6 +42,18 @@ class DetailViewModel @Inject constructor(
 
 ) : ViewModel() {
 
+
+
+    val isShowAllDetail = mutableStateOf(false)
+
+
+
+
+    fun updateIsShowAllDetail(updateValue: Boolean){
+
+        isShowAllDetail.value = updateValue
+    }
+
     val switchTopAppBar = mutableStateOf(false)
 
     fun updateSwitchTopAppBar(updateValue: Boolean) {

@@ -7,31 +7,39 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,19 +57,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.noteapp.common.Constants
 import com.example.noteapp.presentation.ConfirmDeleteDialog
 import com.example.noteapp.presentation.CustomDatePicker
 import com.example.noteapp.presentation.CustomTimePicker
-import com.example.noteapp.presentation.home.ShowConfirmDeleteDialog
 import com.example.noteapp.ui.background.GradientBackground
 import java.time.format.DateTimeFormatter
 
@@ -74,6 +80,11 @@ fun DetailNoteScreen(
     navController: NavController,
     detailViewModel: DetailViewModel = hiltViewModel()
 ) {
+
+
+    val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
+    val primaryColor = MaterialTheme.colorScheme.primary
+
 
 
     var visible by remember { mutableStateOf(false) }
@@ -90,6 +101,10 @@ fun DetailNoteScreen(
     val selectedImage by detailViewModel.selectedImageUri
 
     val showDialogDelete by detailViewModel.showDiaLogDelete
+
+    val isShowAllDetail by detailViewModel.isShowAllDetail
+
+
     // LAUNCHER
     val launcherPickImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -118,8 +133,6 @@ fun DetailNoteScreen(
             .alpha(alpha)
     ) {
         GradientBackground()
-
-
         Column(
 
         ) {
@@ -146,10 +159,23 @@ fun DetailNoteScreen(
                 } else {
                     ViewTopAppBar(
                         onBackStack = {
-                            navController.popBackStack()
-                        },
+                            // quay ve chuan -> tranh loi vo van
+
+                            navController.navigate(Constants.HOME_ROUTE) {
+                                popUpTo(Constants.HOME_ROUTE) {
+                                    inclusive = true
+
+                                }
+                            }
+                        }
+                            ,
+
                         onSwitchAppBar = {
                             detailViewModel.updateSwitchTopAppBar(!switchTopAppBar)
+
+                            if(isShowAllDetail == false ){
+                                detailViewModel.updateIsShowAllDetail(true )
+                            }
                         },
                         onDeleteNote = {
 
@@ -161,20 +187,95 @@ fun DetailNoteScreen(
                     )
                 }
             }
+
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
+                ,
+
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
 
+                Row(
+                    modifier = Modifier.wrapContentSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                Spacer(Modifier.height(4.dp))
+                    val priority = if(note.priority == 1) "Normal note" else if(note.priority == 2) "Medium note " else "Important note"
+                    Icon(imageVector = Icons.Default.DateRange, contentDescription = "", tint = MaterialTheme.colorScheme.onPrimary)
+                    Spacer(Modifier.width(5.dp))
+                    Text("${note.dateAdd} | ${note.category} | ${priority}", style = MaterialTheme.typography.labelLarge,
+                        color = onPrimaryColor)
+                    Spacer(
+                        Modifier.weight(1f)
+                    )
+                    Icon(imageVector =  if(isShowAllDetail) Icons.Default.ArrowDropUp else  Icons.Default.ArrowDropDown
+                        , contentDescription = "",
+                        Modifier.clickable {
+                            detailViewModel.updateIsShowAllDetail(!isShowAllDetail)
+                        },
+                        tint = onPrimaryColor
+                    )
 
-                DateTimeRow(note)
 
-                Spacer(Modifier.height(16.dp))
+                }
+
+
+
+                if(isShowAllDetail){
+
+
+                    Spacer(Modifier.height(4.dp))
+
+                    DateTimeRow(note)
+
+
+                    val showImage by detailViewModel.showImage
+                    Spacer(Modifier.height(16.dp))
+
+                    if (note.image != null && selectedImage == null) {
+                        LoadImageFromFile(context, note.image.toString(), switchTopAppBar, showImage,
+                            onClickDelete = { detailViewModel.updateShowImage(false) }
+                        )
+                    } else if (selectedImage != null) {
+                        Box(
+                            modifier = Modifier
+                                .height(280.dp)
+                                .fillMaxWidth()
+
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(selectedImage),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.matchParentSize()
+                            )
+
+                            IconButton(
+                                onClick = { detailViewModel.updateSelectedImageUri(null) },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(8.dp)
+                                    .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
+                                    .size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Remove image",
+                                    tint = onPrimaryColor,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+
+
+
 
                 EditableTextContent(
                     text = note.title,
@@ -186,58 +287,15 @@ fun DetailNoteScreen(
                         )
                     },
                     isEditing = switchTopAppBar,
-                    styleTextField = MaterialTheme.typography.headlineLarge,
-                    styleText = MaterialTheme.typography.displayMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Transparent)
+                    true
                 )
 
 
-                val showImage by detailViewModel.showImage
-                Spacer(Modifier.height(16.dp))
 
-                if (note.image != null && selectedImage == null) {
-                    LoadImageFromFile(context, note.image.toString(), switchTopAppBar, showImage,
-                        onClickDelete = { detailViewModel.updateShowImage(false) }
-                    )
-                } else if (selectedImage != null) {
-                    Box(
-                        modifier = Modifier
-                            .height(280.dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                    ) {
-                        Image(
-                            painter = rememberAsyncImagePainter(selectedImage),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.matchParentSize()
-                        )
 
-                        IconButton(
-                            onClick = { detailViewModel.updateSelectedImageUri(null) },
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(8.dp)
-                                .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
-                                .size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Remove image",
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
-                }
 
-                Spacer(Modifier.height(16.dp))
 
-                CategoryAndPriorityMenu(detailViewModel, note, switchTopAppBar)
 
-                Spacer(Modifier.height(16.dp))
 
 
                 EditableTextContent(
@@ -250,13 +308,7 @@ fun DetailNoteScreen(
                         )
                     },
                     isEditing = switchTopAppBar,
-                    styleTextField = MaterialTheme.typography.headlineSmall,
-                    styleText = MaterialTheme.typography.headlineSmall.copy(
-                        fontSize = 21.sp
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.Transparent)
+                    false
                 )
 
                 if (showTimePicker) {
@@ -330,7 +382,14 @@ fun DetailNoteScreen(
                     onClick = {
                         detailViewModel.setShowDialogUpdate(false)
                         if (updateState.isSuccess) {
-                            detailViewModel.updateSwitchTopAppBar(false)
+
+                            navController.navigate(Constants.HOME_ROUTE) {
+                                popUpTo(Constants.HOME_ROUTE) {
+                                    inclusive = true
+
+                                }
+                            }
+
                         }
                     }
                 ) {
@@ -338,27 +397,28 @@ fun DetailNoteScreen(
                 }
             }
         )
-    }
 
-    if (showDialogDelete) {
-        ConfirmDeleteDialog(
-            context = context,
-            title = "Notification",
-            message = "Are you sure about delete this note?",
-            positiveText = "Ok",
-            negativeText = "Cancel",
-            onConfirm = {
-                detailViewModel.deleteNoteById(context, note, onSuccess = {
-                    navController.popBackStack()
 
+        if (showDialogDelete) {
+            ConfirmDeleteDialog(
+                context = context,
+                title = "Notification",
+                message = "Are you sure about delete this note?",
+                positiveText = "Ok",
+                negativeText = "Cancel",
+                onConfirm = {
+                    detailViewModel.deleteNoteById(context, note, onSuccess = {
+                        navController.popBackStack()
+
+                    }
+                    )
+                },
+                onCancel = {
+                    detailViewModel.setShowDialogDelete(false)
                 }
-                )
-            },
-            onCancel = {
-                detailViewModel.setShowDialogDelete(false)
-            }
-        )
+            )
+        }
+
     }
-
+    CategoryAndPriorityMenu(detailViewModel, note)
 }
-

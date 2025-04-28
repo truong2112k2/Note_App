@@ -2,6 +2,8 @@ package com.example.noteapp.ui.background
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,6 +13,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -60,26 +64,4 @@ fun GradientBackground() {
     }
 }
 
-@Composable
-fun StarryBackground() {
-    val backgroundColor = MaterialTheme.colorScheme.primary
-
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        // Vẽ nền
-        drawRect(color = backgroundColor, size = size)
-
-        // Tạo danh sách ngôi sao ngẫu nhiên
-        val numberOfStars = 100
-        repeat(numberOfStars) {
-            val x = Random.nextFloat() * size.width
-            val y = Random.nextFloat() * size.height
-            val radius = Random.nextFloat() * 3f + 1f  // Kích thước từ 1 đến 4
-            drawCircle(
-                color = Color.White.copy(alpha = Random.nextFloat() * 0.8f + 0.2f), // ánh sáng lấp lánh
-                radius = radius,
-                center = Offset(x, y)
-            )
-        }
-    }
-}
 

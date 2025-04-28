@@ -142,7 +142,7 @@ fun SearchBar(homeViewModel: HomeViewModel) {
     val isShowDatePicker by homeViewModel.isShowDatePicker
     val selectedDate by homeViewModel.selectedDate
 
- //   if (isShowSearchView) {
+
         AnimatedVisibility(
             visible = isShowSearchView,
             enter = fadeIn(tween(300)) + scaleIn(tween(300)) + slideInVertically(initialOffsetY = { -it / 3 }),
@@ -183,7 +183,7 @@ fun SearchBar(homeViewModel: HomeViewModel) {
                             )
                         },
                         singleLine = true,
-                        label = { Text("By name", color = onPrimaryColor) }
+                        label = { Text("By name", color = onPrimaryColor, style =  MaterialTheme.typography.labelSmall) }
                     )
                 }
 
@@ -328,7 +328,7 @@ fun NoteItemSelected(
 
             Text(
                 text = note.title,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 maxLines = 3,

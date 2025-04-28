@@ -153,6 +153,6 @@ fun CustomNoteAppTheme(
 
     MaterialTheme(
         colorScheme = colors,
-        content = content
+        content = content,
     )
 }

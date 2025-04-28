@@ -1,8 +1,5 @@
 package com.example.noteapp.domain.model
 
-import android.graphics.Color
-import androidx.core.graphics.ColorUtils
-import com.example.noteapp.common.ColorUtils.getRandomLightColorExcludingBlue
 import kotlin.random.Random
 import kotlin.random.nextInt
 

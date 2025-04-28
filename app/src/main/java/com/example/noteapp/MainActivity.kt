@@ -50,8 +50,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalContext
@@ -220,94 +222,35 @@ fun GreetingPreview(addNoteViewModel: AddNoteViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun CustomGrid(items: List<String>) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(
-            count = items.size,
-            span = { index ->
-                // Mỗi item thứ 5 sẽ chiếm 2 cột
-                if ((index + 1) % 5 == 0) {
-                    GridItemSpan(2)
-                } else {
-                    GridItemSpan(1)
-                }
-            }
-        ) { index ->
-            val item = items[index]
-            val isFullSpan = (index + 1) % 5 == 0
+fun PencilCanvasBackground() {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        val canvasWidth = size.width
+        val canvasHeight = size.height
 
-            Box(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-                    .height(if (isFullSpan) 120.dp else 80.dp)
-                    .background(
-                        if (isFullSpan) Color.Cyan else Color.LightGray,
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = item)
-            }
-        }
-    }
+        // Thân bút
+        drawRoundRect(
+            color = Color.Yellow,
+            topLeft = Offset(x = canvasWidth / 2 - 10.dp.toPx(), y = canvasHeight / 4),
+            size = Size(width = 20.dp.toPx(), height = canvasHeight / 2),
+            cornerRadius = CornerRadius(10.dp.toPx(), 10.dp.toPx())
+        )
 
-}
-
-@Composable
-fun AppBarWithRoundButton() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp) // Tăng chiều cao để chứa FAB
-    ) {
-        // Custom AppBar with curved cutout
-        Canvas(modifier = Modifier.fillMaxWidth().height(80.dp)) {
-            val width = size.width
-            val height = size.height
-
-            val cutoutRadius = 40.dp.toPx()
-            val cutoutCenter = Offset(width / 2, height)
-
-            val path = Path().apply {
-                moveTo(0f, 0f)
-                lineTo(0f, height)
-                arcTo(
-                    rect = Rect(
-                        left = cutoutCenter.x - cutoutRadius,
-                        top = cutoutCenter.y - cutoutRadius,
-                        right = cutoutCenter.x + cutoutRadius,
-                        bottom = cutoutCenter.y + cutoutRadius
-                    ),
-                    startAngleDegrees = 180f,
-                    sweepAngleDegrees = -180f,
-                    forceMoveTo = false
-                )
-                lineTo(width, height)
-                lineTo(width, 0f)
+        // Ngòi bút
+        drawPath(
+            path = Path().apply {
+                moveTo(canvasWidth / 2 - 10.dp.toPx(), canvasHeight / 4)
+                lineTo(canvasWidth / 2 + 10.dp.toPx(), canvasHeight / 4)
+                lineTo(canvasWidth / 2f, canvasHeight / 4 - 30.dp.toPx())
                 close()
-            }
+            },
+            color = Color.Gray
+        )
 
-            drawPath(path, color = Color.Red)
-        }
-
-        // Circular Button over the cutout
-        FloatingActionButton(
-            onClick = { /* Handle click */ },
-            shape = CircleShape,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = (-20).dp)
-                .size(60.dp)
-                .zIndex(1f),
-            containerColor = MaterialTheme.colorScheme.secondary
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
-        }
+        // Đuôi bút
+        drawRect(
+            color = Color.Red,
+            topLeft = Offset(canvasWidth / 2 - 10.dp.toPx(), canvasHeight * 3 / 4),
+            size = Size(20.dp.toPx(), 10.dp.toPx())
+        )
     }
 }
-

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -47,6 +48,7 @@ import com.example.noteapp.common.Constants
 import com.example.noteapp.presentation.ConfirmDeleteDialog
 import com.example.noteapp.presentation.detail.DisplayEmptyListMessage
 import com.example.noteapp.ui.background.GradientBackground
+
 import kotlinx.coroutines.delay
 
 
@@ -99,51 +101,55 @@ fun HomeScreen(navController: NavController, context: Context, homeViewModel: Ho
                     SearchBar(homeViewModel)
                     Spacer(Modifier.height(10.dp))
 
-                    Column {
-                        LazyVerticalStaggeredGrid(
-                            columns = StaggeredGridCells.Fixed(2),
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(8.dp),
-                            verticalItemSpacing = 8.dp,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            state = rememberLazyStaggeredGridState()
-                        ) {
-                            items(listNote.size) { index ->
-                                val note = listNote[index]
-                                AnimatedVisibility(
-                                    visible = animationVisible,
-                                    enter = fadeIn(tween(500)) + slideInVertically(
-                                        initialOffsetY = { it / 2 },
-                                        animationSpec = tween(500)
-                                    ),
-                                    exit = fadeOut()
-                                ) {
-                                    AnimatedContent(
-                                        targetState = isListMode,
-                                        label = "ModeSwitcherAnimation"
-                                    ) { listMode ->
-                                        if (listMode) {
-                                            NoteItemSelected(
-                                                note = note,
-                                                isSelected = listIdNote.contains(note.id),
-                                                onToggleSelect = {
-                                                    homeViewModel.toggleSelection(note.id)
-                                                }
-                                            )
-                                        } else {
-                                            NoteItem(
-                                                note = note,
-                                                onClickItem = {
-                                                    navController.navigate("${Constants.DETAIL_NOTE_ROUTE}/${note.id}")
-                                                }
-                                            )
+
+
+                        Column {
+                            LazyVerticalStaggeredGrid(
+                                columns = StaggeredGridCells.Fixed(2),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(8.dp),
+                                verticalItemSpacing = 8.dp,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                state = rememberLazyStaggeredGridState()
+                            ) {
+                                items(listNote.size) { index ->
+                                    val note = listNote[index]
+                                    AnimatedVisibility(
+                                        visible = animationVisible,
+                                        enter = fadeIn(tween(500)) + slideInVertically(
+                                            initialOffsetY = { it / 2 },
+                                            animationSpec = tween(500)
+                                        ),
+                                        exit = fadeOut()
+                                    ) {
+                                        AnimatedContent(
+                                            targetState = isListMode,
+                                            label = "ModeSwitcherAnimation"
+                                        ) { listMode ->
+                                            if (listMode) {
+                                                NoteItemSelected(
+                                                    note = note,
+                                                    isSelected = listIdNote.contains(note.id),
+                                                    onToggleSelect = {
+                                                        homeViewModel.toggleSelection(note.id)
+                                                    }
+                                                )
+                                            } else {
+                                                NoteItem(
+                                                    note = note,
+                                                    onClickItem = {
+                                                        navController.navigate("${Constants.DETAIL_NOTE_ROUTE}/${note.id}")
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
+
                     }
+
                 } else {
                     Column(
                         modifier = Modifier
@@ -154,7 +160,10 @@ fun HomeScreen(navController: NavController, context: Context, homeViewModel: Ho
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        DisplayEmptyListMessage(navController)
+
+
+                        DisplayEmptyListMessage(navController )
+
                     }
                 }
             }

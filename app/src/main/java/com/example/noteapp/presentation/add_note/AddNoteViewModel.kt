@@ -35,9 +35,9 @@ class AddNoteViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val titleNote = mutableStateOf("") //reset
+    val titleNote = mutableStateOf("")
 
-    val contentNote = mutableStateOf("")//reset
+    val contentNote = mutableStateOf("")
 
     private val defaultItemCategory = ItemDropMenu("Category", icon = R.drawable.ic_category)
 

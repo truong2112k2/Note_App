@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 
-class ScheduleNotifyUseCase @Inject constructor(
+class ScheduleUseCase @Inject constructor(
     private val workManager: IWorkManager
 ) {
     suspend fun scheduleNotification(context: Context, note: Note, noteId: String) {
@@ -23,7 +23,7 @@ class ScheduleNotifyUseCase @Inject constructor(
 
         }
     }
-    suspend fun cancelNoteNotification(context: Context, noteId: String){
+    suspend fun cancelScheduleNotification(context: Context, noteId: String){
         try {
             workManager.cancelNoteNotification(context, noteId)
 

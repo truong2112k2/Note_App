@@ -17,7 +17,7 @@ import javax.inject.Singleton
 
 @Singleton
 
-class GetNoteUseCase @Inject constructor(
+class GetUseCase @Inject constructor(
     private var noteRepository: INoteRepository,
 ) {
 
@@ -46,9 +46,6 @@ class GetNoteUseCase @Inject constructor(
         }
 
     }
-    fun getPagedNotes(): PagingSource<Int, NoteEntity> {
-         return noteRepository.getPagedNotes()
-     }
 
 
 }

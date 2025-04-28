@@ -71,6 +71,7 @@ import com.example.noteapp.common.Constants
 import com.example.noteapp.ui.background.GradientBackground
 import com.example.noteapp.presentation.CustomDatePicker
 import com.example.noteapp.presentation.CustomTimePicker
+import com.example.noteapp.presentation.add_note.viewmodel.AddNoteViewModel
 
 @SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -98,29 +99,25 @@ fun AddNoteScreen(
 
             ) {
 
+            val titleNote = addNoteViewModel.titleNote.value
+            val contentNote = addNoteViewModel.contentNote.value
+            val selectedTime = addNoteViewModel.selectedTime.value
+            val selectedDate = addNoteViewModel.selectedDate.value
+            val selectedImageUri = addNoteViewModel.selectedImageUri.value
 
-            val titleNote by addNoteViewModel.titleNote
-            val contentNote by addNoteViewModel.contentNote
-
+            val categoryMenuExpanded = addNoteViewModel.categoryMenuExpanded.value
             val listCategory = addNoteViewModel.listCategory
-            val selectCategory by addNoteViewModel.selectedCategory
-            val categoryMenuExpanded by addNoteViewModel.categoryMenuExpanded
+            val selectedCategory = addNoteViewModel.selectedCategory.value
 
+
+            val priorityMenuExpanded = addNoteViewModel.priorityMenuExpanded.value
             val listPriority = addNoteViewModel.listPriority
-            val priorityMenuExpanded by addNoteViewModel.priorityMenuExpanded
-            val selectPriority by addNoteViewModel.selectedPriority
+            val selectedPriority = addNoteViewModel.selectedPriority.value
 
-
-            val showTimePicker by addNoteViewModel.showPickerTime
-            val selectedTime by addNoteViewModel.selectedTime
-            val selectedDate by addNoteViewModel.selectedDate
-
-
-            val selectedImageUri by addNoteViewModel.selectedImageUri
-
-            val addNoteState = addNoteViewModel.addNoteState.value
-            val showDialog by addNoteViewModel.showDialog
-            val dialogMessage by addNoteViewModel.dialogMessage
+            val showTimePicker = addNoteViewModel.showPickerTime.value
+            val showDialog = addNoteViewModel.showDialog.value
+            val dialogMessage = addNoteViewModel.dialogMessage.value
+            val addNoteState by addNoteViewModel.addNoteState
 
 
             val permissionGranted = remember { mutableStateOf(false) }
@@ -144,6 +141,7 @@ fun AddNoteScreen(
 
                 uri?.let {
                     addNoteViewModel.updateSelectedImageUri(it)
+
                 }
             }
 
@@ -181,12 +179,14 @@ fun AddNoteScreen(
                             .border(1.dp, onPrimaryColor, CircleShape)
                             .padding(horizontal = 12.dp, vertical = 8.dp)
                             .clickable {
-                                addNoteViewModel.updateCategoryMenuExpended(!categoryMenuExpanded)
-                                Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN, "Expanded = $categoryMenuExpanded")
+
+
+                                addNoteViewModel.updateCategoryMenuExpanded(!categoryMenuExpanded)
+
                             }
                     ) {
                         Text(
-                            text = selectCategory.nameOrId,
+                            text = selectedCategory.nameOrId,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.weight(1f),
                             color = onPrimaryColor
@@ -195,7 +195,7 @@ fun AddNoteScreen(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Icon(
-                            painter = painterResource(selectCategory.icon!!), // or any icon you want
+                            painter = painterResource(selectedCategory.icon!!), // or any icon you want
                             contentDescription = "Dropdown Icon",
                             modifier = Modifier.size(20.dp),
                             tint = onPrimaryColor
@@ -203,10 +203,8 @@ fun AddNoteScreen(
                     }
                     DropdownMenu(
                         expanded = categoryMenuExpanded,
-                        onDismissRequest = { addNoteViewModel.updateCategoryMenuExpended(false) },
+                        onDismissRequest = { addNoteViewModel.updateCategoryMenuExpanded(isExpanded = false) },
                         offset = DpOffset(x = 0.dp, y = 10.dp), //
-
-
                     ) {
                         listCategory.forEach { category ->
                             DropdownMenuItem(
@@ -215,12 +213,11 @@ fun AddNoteScreen(
                                         text = category.nameOrId,
                                         fontSize = 16.sp,
                                         color = primaryColor,
-
                                         )
                                 },
                                 onClick = {
-                                    addNoteViewModel.updateSelectCategory(category)
-                                    addNoteViewModel.updateCategoryMenuExpended(!categoryMenuExpanded)
+                                    addNoteViewModel.updateSelectedCategory(category)
+                                    addNoteViewModel.updateCategoryMenuExpanded(!categoryMenuExpanded)
                                 },
                                 leadingIcon = {
                                     Icon(
@@ -239,18 +236,16 @@ fun AddNoteScreen(
                 }
 
                 Spacer(Modifier.weight(1f))
-
                 /// MENU_PRIORITY
-
                 Box(
 
                 ) {
 
                     Text(
-                        selectPriority.nameOrId,
+                        selectedPriority.nameOrId,
                         modifier = Modifier
                             .width(150.dp)
-                            .background(selectPriority.color!!, CircleShape)
+                            .background(selectedPriority.color!!, CircleShape)
                             .border(1.dp, onPrimaryColor, CircleShape)
                             .padding(8.dp)
                             .clickable {
@@ -281,7 +276,8 @@ fun AddNoteScreen(
 
                                 },
                                 onClick = {
-                                    addNoteViewModel.updateSelectPriority(priority)
+                                  //  addNoteViewModel.updateSelectPriority(priority)
+                                    addNoteViewModel.updateSelectedPriority(priority)
                                     addNoteViewModel.updatePriorityMenuExpanded(!priorityMenuExpanded)
                                 },
                                 modifier = Modifier
@@ -324,7 +320,7 @@ fun AddNoteScreen(
                 maxLines = 1,
                 minLines = 1
 
-                )
+            )
             Spacer(Modifier.height(8.dp))
 
 
@@ -442,7 +438,7 @@ fun AddNoteScreen(
             CustomDatePicker(
                 showPickerDate = showPickerDate,
                 onClickPositiveButton = {addNoteViewModel.updateShowPickerDate(false)},
-               onClickNegativeButton = {addNoteViewModel.updateShowPickerDate(false)},
+                onClickNegativeButton = {addNoteViewModel.updateShowPickerDate(false)},
                 onSelectDate = { addNoteViewModel.updateSelectedDate(it)})
 
             LaunchedEffect(addNoteState.isSuccess, addNoteState.error) {
@@ -471,11 +467,13 @@ fun AddNoteScreen(
                         TextButton(
                             onClick = {
                                 addNoteViewModel.updateShowDialog(false)
-                                addNoteViewModel.resetAddState()
+                                Log.d("Check","Before add" +addNoteState.isSuccess.toString() )
                                 if (addNoteState.isSuccess) {
-                                    addNoteViewModel.resetAddNoteField()
+                                    addNoteViewModel.resetFields()
                                     navController.popBackStack()
                                 }
+                                addNoteViewModel.resetAddState()
+                                Log.d("Check","After add" + addNoteState.isSuccess.toString() )
                             }
                         ) {
                             Text("OK")
@@ -486,4 +484,3 @@ fun AddNoteScreen(
         }
     }
 }
-

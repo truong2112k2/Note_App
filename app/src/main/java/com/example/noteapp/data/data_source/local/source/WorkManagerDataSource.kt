@@ -44,7 +44,7 @@ class WorkManagerDataSource @Inject constructor() {
                 .build()
 
             WorkManager.getInstance(context).enqueue(workRequest)
-            Log.d("Check Note Id", "Note id scheduleNotification ${note.id}")
+            Log.d("Check Note Id", "Note id scheduleNotification ${noteId}")
         } catch (e: Exception) {
             Log.d("ADSAD", e.message.toString())
         }

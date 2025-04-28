@@ -4,15 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.example.noteapp.data.data_source.local.database.NoteDao
 import com.example.noteapp.data.data_source.local.database.NoteDatabase
-import com.example.noteapp.data.data_source.local.source.ImageFileDataSource
-import com.example.noteapp.data.repository.ImageRepositoryImpl
-import com.example.noteapp.data.repository.NoteRepositoryImpl
-import com.example.noteapp.data.data_source.local.source.NoteLocalDataSource
-import com.example.noteapp.data.repository.WorkManagerImpl
-import com.example.noteapp.domain.repository.IWorkManager
-import com.example.noteapp.domain.use_case.AddNoteUseCase
-import com.example.noteapp.domain.use_case.GetNoteUseCase
-import com.example.noteapp.domain.use_case.UpdateNoteUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 
-class AddNoteUseCase  @Inject constructor(
+class AddUseCase  @Inject constructor(
     private var noteRepository: INoteRepository,
     private var imageRepository: IImageRepository
 ) {
@@ -35,7 +35,7 @@ class AddNoteUseCase  @Inject constructor(
 
     }
 
-    suspend fun saveImageToFileDir(uri: Uri, fileName: String): String{
+    suspend fun insertImageToFileDir(uri: Uri, fileName: String): String{
       return withContext(Dispatchers.Default){
           try{
               imageRepository.saveImage(uri, fileName)

@@ -12,11 +12,7 @@ import com.example.noteapp.R
 import com.example.noteapp.common.Constants
 import com.example.noteapp.domain.model.ItemDropMenu
 import com.example.noteapp.domain.model.Note
-import com.example.noteapp.domain.use_case.AddNoteUseCase
-import com.example.noteapp.domain.use_case.DeleteNoteUseCase
-import com.example.noteapp.domain.use_case.GetNoteUseCase
-import com.example.noteapp.domain.use_case.ScheduleNotifyUseCase
-import com.example.noteapp.domain.use_case.UpdateNoteUseCase
+import com.example.noteapp.domain.use_case.NoteUseCases
 import com.example.noteapp.ui.theme.high
 import com.example.noteapp.ui.theme.low
 import com.example.noteapp.ui.theme.medium
@@ -34,11 +30,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val getNotesUseCase: GetNoteUseCase,
-    private val updateNoteUseCase: UpdateNoteUseCase,
-    private val addNoteUseCase: AddNoteUseCase,
-    private val scheduleNotifyUseCase: ScheduleNotifyUseCase,
-    private val deleteNoteUseCase: DeleteNoteUseCase
+    private val noteUseCases: NoteUseCases
 
 ) : ViewModel() {
 
@@ -56,7 +48,7 @@ class DetailViewModel @Inject constructor(
 
     fun getNoteById(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val noteDetail = getNotesUseCase.getNoteById(id)
+            val noteDetail =  noteUseCases.getUseCase.getNoteById(id)
             if (noteDetail != null) {
                 _note.value = noteDetail
             }
@@ -84,7 +76,7 @@ class DetailViewModel @Inject constructor(
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
             val currentDate = today.format(formatter)
 
-            val originalNote = getNotesUseCase.getNoteById(note.id)
+            val originalNote = noteUseCases.getUseCase.getNoteById(note.id)
 
 
 
@@ -99,7 +91,7 @@ class DetailViewModel @Inject constructor(
                 // Nếu ghi chú đã có ảnh → xóa ảnh cũ
                 if (originalNote?.image != "null") {
                 //    val deleted = updateNoteUseCase.deleteImage(originalNote?.image.toString())
-                    val deleted = updateNoteUseCase.deleteImage(originalNote!!.image!!)
+                    val deleted = noteUseCases.deleteUseCase.deleteImage(originalNote!!.image!!)
 
                     if (!deleted) {
                         _updateSate.value = UpdateState(error = "ERROR: Can't delete old image")
@@ -108,7 +100,7 @@ class DetailViewModel @Inject constructor(
                 }
 
                 // Lưu ảnh mới vào file
-                newImagePath = addNoteUseCase.saveImageToFileDir(
+                newImagePath = noteUseCases.addUseCase.insertImageToFileDir(
                     uri,
                     currentTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ".Jpg"
                 )
@@ -118,7 +110,7 @@ class DetailViewModel @Inject constructor(
 
             //  Nếu người dùng chọn ẩn ảnh (bỏ ảnh)
             if (showImage.value == false) {
-                updateNoteUseCase.deleteImage(note.image.toString())
+                noteUseCases.deleteUseCase.deleteImage(note.image.toString())
                 newImagePath = null
             }
 
@@ -152,11 +144,11 @@ class DetailViewModel @Inject constructor(
             }
 
             // 👉 Cập nhật ghi chú
-            updateNoteUseCase.updateNote(newNote)
+            noteUseCases.updateUseCase.updateNote(newNote)
             Log.d("2312321", "ID note Update ${note.id}")
 
             // 👉 Lên lịch thông báo nếu có
-            scheduleNotifyUseCase.scheduleNotification(context, note, note.id.toString())
+            noteUseCases.scheduleUseCase.scheduleNotification(context, note, note.id.toString())
 
             _updateSate.value = UpdateState(isLoading = false, isSuccess = true)
             Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Update completed: $newNote")
@@ -176,16 +168,16 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             runCatching {
-                val delete = deleteNoteUseCase.deleteNoteById(note.id)
+                val delete = noteUseCases.deleteUseCase.deleteNoteById(note.id)
                 if (delete == -1) throw Exception("Delete failed in DB")
 
                 // Nếu có ảnh, xóa ảnh trong Firebase Storage
                 note.image?.let {
-                    updateNoteUseCase.deleteImage(it)
+                    noteUseCases.deleteUseCase.deleteImage(it)
                 }
 
                 // Hủy notification
-                scheduleNotifyUseCase.cancelNoteNotification(
+                noteUseCases.scheduleUseCase.cancelScheduleNotification(
                     context = context,
                     noteId = note.id.toString()
                 )

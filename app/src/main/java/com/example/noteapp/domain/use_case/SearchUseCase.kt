@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-class SearchNoteUseCase @Inject constructor(
+class SearchUseCase @Inject constructor(
     private val noteRepository: INoteRepository
 ) {
     @SuppressLint("SuspiciousIndentation")

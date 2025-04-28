@@ -7,11 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.noteapp.domain.model.Note
-import com.example.noteapp.domain.use_case.DeleteNoteUseCase
-import com.example.noteapp.domain.use_case.GetNoteUseCase
-import com.example.noteapp.domain.use_case.ScheduleNotifyUseCase
-import com.example.noteapp.domain.use_case.SearchNoteUseCase
-import com.example.noteapp.domain.use_case.UpdateNoteUseCase
+import com.example.noteapp.domain.use_case.DeleteUseCase
+import com.example.noteapp.domain.use_case.GetUseCase
+import com.example.noteapp.domain.use_case.NoteUseCases
+import com.example.noteapp.domain.use_case.ScheduleUseCase
+import com.example.noteapp.domain.use_case.SearchUseCase
+import com.example.noteapp.domain.use_case.UpdateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -26,11 +27,7 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getNotesUseCase: GetNoteUseCase,
-    private val searchNoteUseCase: SearchNoteUseCase,
-    private val deleteNoteUseCase: DeleteNoteUseCase,
-    private val scheduleNotifyUseCase: ScheduleNotifyUseCase,
-    private val updateNoteUseCase: UpdateNoteUseCase
+    private val noteUseCases: NoteUseCases
 
 
 ) : ViewModel() {
@@ -87,7 +84,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            getNotesUseCase.getAllNote().collect { notes ->
+            noteUseCases.getUseCase.getAllNote().collect { notes ->
                 if (notes.isEmpty()) {
                     _getListState.value = HomeState(error = "Can't get data from database")
                 } else {
@@ -127,7 +124,7 @@ class HomeViewModel @Inject constructor(
     private fun searchNoteByTitle(title: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            searchNoteUseCase.searchNotesByTitle(title).collect { notes ->
+            noteUseCases.searchUseCase.searchNotesByTitle(title).collect { notes ->
                 if (notes.isEmpty()) {
                     _listNote.value = notes
                 } else {
@@ -144,7 +141,7 @@ class HomeViewModel @Inject constructor(
     fun searchNoteByDate(date: String) {
 
         viewModelScope.launch(Dispatchers.IO) {
-            searchNoteUseCase.searchNotesByDate(date).collect { notes ->
+            noteUseCases.searchUseCase.searchNotesByDate(date).collect { notes ->
                 if (notes.isEmpty()) {
                     _listNote.value = notes
                 } else {
@@ -209,7 +206,7 @@ class HomeViewModel @Inject constructor(
             }.map {
                 it.image
             } // lấy ra list link duong dan image trc khi xoa  casc note
-            val deleteCount = deleteNoteUseCase.deleteNotesByIds(noteIds) // xoa cac note
+            val deleteCount = noteUseCases.deleteUseCase.deleteNotesByIds(noteIds) // xoa cac note
 
             if (deleteCount <= 0) {
                 Log.e("DeleteNotes", "Xóa ghi chú thất bại.")
@@ -223,7 +220,7 @@ class HomeViewModel @Inject constructor(
 
             listImg.forEach { fileName  ->
                 try {
-                        updateNoteUseCase.deleteImage(fileName.toString())
+                    noteUseCases.deleteUseCase.deleteImage(fileName.toString())
 
                 } catch (e: Exception) {
                     failedDeleteImages.add(fileName.toString())
@@ -236,7 +233,7 @@ class HomeViewModel @Inject constructor(
             // Xử lý hủy notification
             noteIds.forEach { noteId ->
                 try {
-                    scheduleNotifyUseCase.cancelNoteNotification(context, noteId.toString())
+                    noteUseCases.scheduleUseCase.cancelScheduleNotification(context, noteId.toString())
                 } catch (e: Exception) {
                     failedCancelNotifications.add(noteId.toString())
                     Log.e("CancelNotificationError", "Không thể hủy thông báo cho noteId: $noteId", e)
@@ -258,7 +255,6 @@ class HomeViewModel @Inject constructor(
             }
             _deleteNotesState.value = HomeState(isSuccess = true)
 
-          //  Log.d("CheckSelected", "Xóa thành công ${deleteCount} ghi chú.")
         }
     }
 

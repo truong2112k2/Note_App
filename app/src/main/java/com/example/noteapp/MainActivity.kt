@@ -67,7 +67,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.noteapp.presentation.CustomNavigation
-import com.example.noteapp.presentation.add_note.AddNoteViewModel
+import com.example.noteapp.presentation.add_note.viewmodel.AddNoteViewModel
 import com.example.noteapp.presentation.home.HomeViewModel
 import com.example.noteapp.ui.theme.CustomNoteAppTheme
 import dagger.hilt.android.AndroidEntryPoint

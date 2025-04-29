@@ -4,15 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -41,7 +33,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PriorityHigh
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.AlertDialog
@@ -59,7 +50,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,6 +68,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.noteapp.R
 import com.example.noteapp.common.Constants
 import com.example.noteapp.domain.model.Note
+import com.example.noteapp.presentation.detail.viewmodel.DetailViewModel
 import java.io.File
 
 @Composable
@@ -438,13 +429,13 @@ fun EditableTextContent(
 
             )
     } else {
-        if( isTitle){
+        if(isTitle){
             Text(text,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelLarge.copy(
-                fontSize = 30.sp,
-                lineHeight = 35.sp,
+                fontSize = 38.sp,
+                lineHeight = 43.sp,
                     color = MaterialTheme.colorScheme.onPrimary
             ))
         }else{
@@ -507,7 +498,8 @@ fun ExpandableText(text: String) {
 
 @Composable
 fun CategoryAndPriorityMenu(detailViewModel: DetailViewModel, note: Note) {
-    val primaryColor = MaterialTheme.colorScheme.primary
+
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
     val listCategory = detailViewModel.listCategory
     val categoryMenuExpanded by detailViewModel.categoryMenuExpanded
     val listPriority = detailViewModel.listPriority
@@ -546,14 +538,14 @@ fun CategoryAndPriorityMenu(detailViewModel: DetailViewModel, note: Note) {
                                 Icon(
                                     painter = painterResource(id = category.icon!!),
                                     contentDescription = null,
-                                    tint = primaryColor,
+                                    tint = onPrimary,
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = category.nameOrId,
                                     fontSize = 16.sp,
-                                    color = primaryColor
+                                    color = onPrimary
                                 )
                             }
                         }
@@ -561,7 +553,7 @@ fun CategoryAndPriorityMenu(detailViewModel: DetailViewModel, note: Note) {
                 },
                 confirmButton = {
                     TextButton(onClick = { detailViewModel.updateCategoryMenuExpended(false) }) {
-                        Text("Close")
+                        Text("Close", color = onPrimary)
                     }
                 }
             )
@@ -609,7 +601,7 @@ fun CategoryAndPriorityMenu(detailViewModel: DetailViewModel, note: Note) {
                 },
                 confirmButton = {
                     TextButton(onClick = { detailViewModel.updatePriorityMenuExpanded(false) }) {
-                        Text("Close")
+                        Text("Close", color = onPrimary)
                     }
                 }
             )

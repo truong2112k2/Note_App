@@ -4,14 +4,14 @@ import android.content.Context
 import android.util.Log
 import com.example.noteapp.data.toNoteEntity
 import com.example.noteapp.domain.model.Note
-import com.example.noteapp.domain.repository.IWorkManager
+import com.example.noteapp.domain.repository.IWorkManagerRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 
 class ScheduleUseCase @Inject constructor(
-    private val workManager: IWorkManager
+    private val workManager: IWorkManagerRepository
 ) {
     suspend fun scheduleNotification(context: Context, note: Note, noteId: String) {
 

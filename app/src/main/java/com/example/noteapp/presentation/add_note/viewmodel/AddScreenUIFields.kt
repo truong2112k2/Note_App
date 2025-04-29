@@ -8,7 +8,7 @@ import com.example.noteapp.ui.theme.high
 import com.example.noteapp.ui.theme.low
 import com.example.noteapp.ui.theme.medium
 
-class AddNoteFields {
+class AddScreenUIFields {
 
     val titleNote = mutableStateOf("")
     val contentNote = mutableStateOf("")

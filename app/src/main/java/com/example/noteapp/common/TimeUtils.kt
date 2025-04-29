@@ -1,4 +1,4 @@
-package com.example.noteapp.data.utils
+package com.example.noteapp.common
 import java.text.SimpleDateFormat
 import java.util.*
 

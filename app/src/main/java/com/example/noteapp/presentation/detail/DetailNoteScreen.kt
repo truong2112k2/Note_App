@@ -7,14 +7,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.with
@@ -68,6 +65,7 @@ import com.example.noteapp.common.Constants
 import com.example.noteapp.presentation.ConfirmDeleteDialog
 import com.example.noteapp.presentation.CustomDatePicker
 import com.example.noteapp.presentation.CustomTimePicker
+import com.example.noteapp.presentation.detail.viewmodel.DetailViewModel
 import com.example.noteapp.ui.background.GradientBackground
 import java.time.format.DateTimeFormatter
 
@@ -83,7 +81,6 @@ fun DetailNoteScreen(
 
 
     val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
-    val primaryColor = MaterialTheme.colorScheme.primary
 
 
 
@@ -159,7 +156,6 @@ fun DetailNoteScreen(
                 } else {
                     ViewTopAppBar(
                         onBackStack = {
-                            // quay ve chuan -> tranh loi vo van
 
                             navController.navigate(Constants.HOME_ROUTE) {
                                 popUpTo(Constants.HOME_ROUTE) {
@@ -168,7 +164,7 @@ fun DetailNoteScreen(
                                 }
                             }
                         }
-                            ,
+                        ,
 
                         onSwitchAppBar = {
                             detailViewModel.updateSwitchTopAppBar(!switchTopAppBar)
@@ -228,7 +224,7 @@ fun DetailNoteScreen(
                 if(isShowAllDetail){
 
 
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(16.dp))
 
                     DateTimeRow(note)
 
@@ -274,6 +270,7 @@ fun DetailNoteScreen(
                 }
 
 
+                Spacer(Modifier.height(16.dp))
 
 
 
@@ -398,27 +395,27 @@ fun DetailNoteScreen(
             }
         )
 
+    }
 
-        if (showDialogDelete) {
-            ConfirmDeleteDialog(
-                context = context,
-                title = "Notification",
-                message = "Are you sure about delete this note?",
-                positiveText = "Ok",
-                negativeText = "Cancel",
-                onConfirm = {
-                    detailViewModel.deleteNoteById(context, note, onSuccess = {
-                        navController.popBackStack()
 
-                    }
-                    )
-                },
-                onCancel = {
-                    detailViewModel.setShowDialogDelete(false)
+    if (showDialogDelete) {
+        ConfirmDeleteDialog(
+            context = context,
+            title = "Notification",
+            message = "Are you sure about delete this note?",
+            positiveText = "Ok",
+            negativeText = "Cancel",
+            onConfirm = {
+                detailViewModel.deleteNoteById(context, note, onSuccess = {
+                    navController.popBackStack()
+
                 }
-            )
-        }
-
+                )
+            },
+            onCancel = {
+                detailViewModel.setShowDialogDelete(false)
+            }
+        )
     }
     CategoryAndPriorityMenu(detailViewModel, note)
 }

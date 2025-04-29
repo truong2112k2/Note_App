@@ -10,5 +10,6 @@ data class NoteUseCases @Inject constructor(
     val updateUseCase: UpdateUseCase,
     val getUseCase: GetUseCase,
     val searchUseCase: SearchUseCase,
-    val scheduleUseCase: ScheduleUseCase
+    val scheduleUseCase: ScheduleUseCase,
+    val dataStorageUseCase: DataStorageUseCase
 )

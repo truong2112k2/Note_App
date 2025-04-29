@@ -3,7 +3,7 @@ package com.example.noteapp.data.repository
 import android.content.Context
 import android.net.Uri
 import com.example.noteapp.data.data_source.local.source.ImageFileDataSource
-import com.example.noteapp.data.utils.ImageUtils
+import com.example.noteapp.data.data_source.local.utils.ImageUtils
 import com.example.noteapp.domain.repository.IImageRepository
 import java.io.File
 import javax.inject.Inject

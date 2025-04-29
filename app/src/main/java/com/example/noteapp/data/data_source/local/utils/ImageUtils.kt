@@ -1,4 +1,4 @@
-package com.example.noteapp.data.utils
+package com.example.noteapp.data.data_source.local.utils
 
 import android.content.Context
 import android.net.Uri

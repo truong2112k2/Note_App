@@ -51,6 +51,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -99,24 +100,23 @@ fun AddNoteScreen(
 
             ) {
 
-            val titleNote = addNoteViewModel.titleNote.value
-            val contentNote = addNoteViewModel.contentNote.value
-            val selectedTime = addNoteViewModel.selectedTime.value
-            val selectedDate = addNoteViewModel.selectedDate.value
-            val selectedImageUri = addNoteViewModel.selectedImageUri.value
+            val titleNote by addNoteViewModel.titleNote
+            val contentNote by addNoteViewModel.contentNote
+            val selectedTime by addNoteViewModel.selectedTime
+            val selectedDate by addNoteViewModel.selectedDate
+            val selectedImageUri by addNoteViewModel.selectedImageUri
 
-            val categoryMenuExpanded = addNoteViewModel.categoryMenuExpanded.value
+            val categoryMenuExpanded by addNoteViewModel.categoryMenuExpanded
             val listCategory = addNoteViewModel.listCategory
-            val selectedCategory = addNoteViewModel.selectedCategory.value
+            val selectedCategory by addNoteViewModel.selectedCategory
 
-
-            val priorityMenuExpanded = addNoteViewModel.priorityMenuExpanded.value
+            val priorityMenuExpanded by addNoteViewModel.priorityMenuExpanded
             val listPriority = addNoteViewModel.listPriority
-            val selectedPriority = addNoteViewModel.selectedPriority.value
+            val selectedPriority by addNoteViewModel.selectedPriority
 
-            val showTimePicker = addNoteViewModel.showPickerTime.value
-            val showDialog = addNoteViewModel.showDialog.value
-            val dialogMessage = addNoteViewModel.dialogMessage.value
+            val showTimePicker by addNoteViewModel.showPickerTime
+            val showDialog by addNoteViewModel.showDialog
+            val dialogMessage by addNoteViewModel.dialogMessage
             val addNoteState by addNoteViewModel.addNoteState
 
 
@@ -176,14 +176,10 @@ fun AddNoteScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .width(150.dp)
+                            .clip(CircleShape)
                             .border(1.dp, onPrimaryColor, CircleShape)
+                            .clickable { addNoteViewModel.updateCategoryMenuExpanded(!categoryMenuExpanded) }
                             .padding(horizontal = 12.dp, vertical = 8.dp)
-                            .clickable {
-
-
-                                addNoteViewModel.updateCategoryMenuExpanded(!categoryMenuExpanded)
-
-                            }
                     ) {
                         Text(
                             text = selectedCategory.nameOrId,
@@ -212,7 +208,7 @@ fun AddNoteScreen(
                                     Text(
                                         text = category.nameOrId,
                                         fontSize = 16.sp,
-                                        color = primaryColor,
+                                        color = onPrimaryColor,
                                         )
                                 },
                                 onClick = {
@@ -223,7 +219,7 @@ fun AddNoteScreen(
                                     Icon(
                                         painter = painterResource(id = category.icon!!),
                                         contentDescription = "",
-                                        tint = primaryColor,
+                                        tint = onPrimaryColor,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 },
@@ -238,20 +234,20 @@ fun AddNoteScreen(
                 Spacer(Modifier.weight(1f))
                 /// MENU_PRIORITY
                 Box(
-
+                    modifier = Modifier
+                        .width(150.dp)
+                        .background(selectedPriority.color!!,CircleShape)
+                        .clip(CircleShape)
+                        .border(1.dp, onPrimaryColor, CircleShape)
+                        .clickable {
+                            addNoteViewModel.updatePriorityMenuExpanded(!priorityMenuExpanded)
+                        }
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
                 ) {
 
                     Text(
                         selectedPriority.nameOrId,
-                        modifier = Modifier
-                            .width(150.dp)
-                            .background(selectedPriority.color!!, CircleShape)
-                            .border(1.dp, onPrimaryColor, CircleShape)
-                            .padding(8.dp)
-                            .clickable {
-                                addNoteViewModel.updatePriorityMenuExpanded(!priorityMenuExpanded)
-                            },
-                        textAlign = TextAlign.Center,
                         color = onPrimaryColor
 
                     )
@@ -259,7 +255,7 @@ fun AddNoteScreen(
                     DropdownMenu(
                         expanded = priorityMenuExpanded,
                         onDismissRequest = { addNoteViewModel.updatePriorityMenuExpanded(false) },
-                        offset = DpOffset(x = 0.dp, y = 10.dp) // 👈 Lệch xuống 10.dp
+                        offset = DpOffset(x = 0.dp, y = 10.dp)
 
                     ) {
                         listPriority.forEach { priority ->
@@ -276,7 +272,6 @@ fun AddNoteScreen(
 
                                 },
                                 onClick = {
-                                  //  addNoteViewModel.updateSelectPriority(priority)
                                     addNoteViewModel.updateSelectedPriority(priority)
                                     addNoteViewModel.updatePriorityMenuExpanded(!priorityMenuExpanded)
                                 },
@@ -301,12 +296,14 @@ fun AddNoteScreen(
                 placeholder = {
                     Text(
                         text = "Title",
-                        style = MaterialTheme.typography.displayLarge,
+                        style = MaterialTheme.typography.displayLarge.copy(
+                            fontSize = 42.sp
+                        ),
                         color = onPrimaryColor
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                //singleLine = false,
+
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
@@ -316,9 +313,10 @@ fun AddNoteScreen(
 
                 ),
 
-                textStyle = TextStyle(fontSize = 40.sp, color = onPrimaryColor),
-                maxLines = 1,
-                minLines = 1
+                textStyle = MaterialTheme.typography.displayLarge.copy(
+                    fontSize = 42.sp
+                ),
+                maxLines = 1
 
             )
             Spacer(Modifier.height(8.dp))
@@ -359,55 +357,34 @@ fun AddNoteScreen(
             }
 
 
-            // TEXT_CONTENT
-
-            val lineHeight = 24.sp
-
-            BasicTextField(
+            OutlinedTextField(
                 value = contentNote,
-                onValueChange = { addNoteViewModel.updateContentNote(it) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .heightIn(150.dp)
-                    .padding(8.dp),
-                textStyle = TextStyle(
-                    fontSize = 16.sp,
-                    lineHeight = lineHeight,
-                    color = MaterialTheme.colorScheme.onPrimary
+                onValueChange = {
+                    addNoteViewModel.updateContentNote(it)
+                                },
+                placeholder = {
+                    Text(
+                        text = "Enter some content",
+                        style = TextStyle(fontSize = 24.sp, color = onPrimaryColor),
+                        color = onPrimaryColor
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                //singleLine = false,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    disabledBorderColor = Color.Transparent,
+                    errorBorderColor = Color.Transparent,
+                    cursorColor = onPrimaryColor
+
                 ),
-                cursorBrush = SolidColor(onPrimaryColor),
 
-                decorationBox = { innerTextField ->
-                    Box {
-
-                        Canvas(modifier = Modifier.matchParentSize()) {
-                            val lineSpacing = lineHeight.toPx()
-                            var currentY = 0f
-                            while (currentY < size.height) {
-                                drawLine(
-                                    color = onPrimaryColor,
-                                    start = Offset(0f, currentY + lineSpacing),
-                                    end = Offset(size.width, currentY + lineSpacing),
-                                    strokeWidth = 1f
-                                )
-                                currentY += lineSpacing
-                            }
-                        }
+                textStyle = TextStyle(fontSize = 24.sp, color = onPrimaryColor),
 
 
-                        if (contentNote.isEmpty()) {
-                            Text(
-                                text = "Content",
-                                lineHeight = lineHeight,
-                                style = MaterialTheme.typography.titleLarge,
-                                color = onPrimaryColor
-                            )
-
-                        }
-                        innerTextField() // TextField content
-                    }
-                }
             )
+
 
             // PICK_KER_TIME
 

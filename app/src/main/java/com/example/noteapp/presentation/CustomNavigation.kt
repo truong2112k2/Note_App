@@ -10,7 +10,7 @@ import com.example.noteapp.common.Constants
 import com.example.noteapp.presentation.add_note.AddNoteScreen
 import com.example.noteapp.presentation.detail.DetailNoteScreen
 import com.example.noteapp.presentation.home.HomeScreen
-import com.example.noteapp.presentation.home.HomeViewModel
+import com.example.noteapp.presentation.home.viewmodel.HomeViewModel
 
 @SuppressLint("NewApi")
 @Composable
@@ -20,7 +20,10 @@ fun CustomNavigation(
     homeViewModel: HomeViewModel
 ) {
 
-NavHost(navController = navController, startDestination = Constants.HOME_ROUTE) {
+NavHost(navController = navController, startDestination = Constants.SPlASH_ROUTE) {
+    composable(Constants.SPlASH_ROUTE){
+        SplashScreen(navController)
+    }
     composable(Constants.HOME_ROUTE){
         HomeScreen(navController, context, homeViewModel)
     }

@@ -13,7 +13,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-
 class AddUseCase  @Inject constructor(
     private var noteRepository: INoteRepository,
     private var imageRepository: IImageRepository

@@ -1,4 +1,4 @@
-package com.example.noteapp.presentation.detail
+package com.example.noteapp.presentation.detail.viewmodel
 
 class UpdateState(
     val isLoading: Boolean = false,

@@ -1,6 +1,6 @@
 package com.example.noteapp.presentation.add_note.viewmodel
 
-import com.example.noteapp.data.utils.TimeUtils
+import com.example.noteapp.common.TimeUtils
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -26,7 +26,7 @@ class AddNoteViewModel @Inject constructor(
     private val noteUseCases: NoteUseCases
 ) : ViewModel() {
 
-    private val addNoteFields = AddNoteFields()
+    private val addNoteFields = AddScreenUIFields()
 
     val titleNote = addNoteFields.titleNote
     val contentNote = addNoteFields.contentNote

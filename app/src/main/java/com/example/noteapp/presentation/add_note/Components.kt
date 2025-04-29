@@ -175,9 +175,7 @@ fun NotificationRow(
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Bên trái: 2 Text dọc
 
-        // Bên phải: Icon
         Icon(
             imageVector = icon,
             contentDescription = null,

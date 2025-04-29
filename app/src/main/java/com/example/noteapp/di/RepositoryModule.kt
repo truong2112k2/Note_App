@@ -1,11 +1,13 @@
 package com.example.noteapp.di
 
+import com.example.noteapp.data.repository.DataStorageImpl
 import com.example.noteapp.data.repository.ImageRepositoryImpl
 import com.example.noteapp.data.repository.NoteRepositoryImpl
 import com.example.noteapp.data.repository.WorkManagerImpl
+import com.example.noteapp.domain.repository.IDataStorageRepository
 import com.example.noteapp.domain.repository.IImageRepository
 import com.example.noteapp.domain.repository.INoteRepository
-import com.example.noteapp.domain.repository.IWorkManager
+import com.example.noteapp.domain.repository.IWorkManagerRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -26,6 +28,10 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindWorkManagerRepository(workManagerImpl: WorkManagerImpl) :  IWorkManager
+    abstract fun bindWorkManagerRepository(workManagerImpl: WorkManagerImpl) :  IWorkManagerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDataStorageRepository(dataStorageImpl: DataStorageImpl) : IDataStorageRepository
 }
 

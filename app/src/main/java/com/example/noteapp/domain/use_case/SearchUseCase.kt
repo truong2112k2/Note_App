@@ -33,7 +33,7 @@ class SearchUseCase @Inject constructor(
 
 
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
+                Log.d(Constants.ERROR, "SearchUseCase searchNotesByTitle ${e.message}")
 
                 emptyFlow<List<Note>>()
             }
@@ -50,7 +50,7 @@ class SearchUseCase @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
+                Log.d(Constants.ERROR, "SearchUseCase searchNotesByDate ${e.message}")
                 emptyFlow<List<Note>>()
             }
 

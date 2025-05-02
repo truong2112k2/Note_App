@@ -1,11 +1,10 @@
 package com.example.noteapp.presentation.home.viewmodel
 
-// HomeUIState.kt
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 
-data class HomeUIFields(
+data class HomeScreenFields(
     val isDarkTheme: MutableState<Boolean> = mutableStateOf(false),
     val isListMode: MutableState<Boolean> = mutableStateOf(false),
     val showSearchView: MutableState<Boolean> = mutableStateOf(false),

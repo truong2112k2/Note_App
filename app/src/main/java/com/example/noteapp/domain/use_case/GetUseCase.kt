@@ -1,9 +1,7 @@
 package com.example.noteapp.domain.use_case
 
 import android.util.Log
-import androidx.paging.PagingSource
 import com.example.noteapp.common.Constants
-import com.example.noteapp.data.data_source.local.database.NoteEntity
 import com.example.noteapp.data.toNote
 import com.example.noteapp.domain.model.Note
 import com.example.noteapp.domain.repository.INoteRepository
@@ -21,14 +19,14 @@ class GetUseCase @Inject constructor(
     private var noteRepository: INoteRepository,
 ) {
 
-    suspend fun getNoteById(id: Long ): Note? {
+    suspend fun getNoteById(id: Long): Note? {
         return withContext(Dispatchers.IO) {
             try {
                 val note = noteRepository.getNoteByID(id)
-                val noteConvert =  note?.toNote()
+                val noteConvert = note?.toNote()
                 noteConvert
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, "Error getNoteById GetNoteUseCase ${e.message.toString()}")
+                Log.d(Constants.ERROR, "GetUseCase getNoteById ${e.message}")
                 null
             }
         }
@@ -36,12 +34,14 @@ class GetUseCase @Inject constructor(
     }
 
     fun getAllNote(): Flow<List<Note>> {
-        return   try{
-             noteRepository.getAllNote()
+        return try {
+            noteRepository.getAllNote()
                 .map { entityList ->
                     entityList.map { it.toNote() }
                 }
-        }catch (e: Exception){
+        } catch (e: Exception) {
+            Log.d(Constants.ERROR, "GetUseCase getAllNote ${e.message}")
+
             emptyFlow<List<Note>>()
         }
 

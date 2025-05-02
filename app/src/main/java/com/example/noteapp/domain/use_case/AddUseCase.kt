@@ -13,38 +13,36 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AddUseCase  @Inject constructor(
+class AddUseCase @Inject constructor(
     private var noteRepository: INoteRepository,
     private var imageRepository: IImageRepository
 ) {
-     suspend fun insertNote(note: Note): Long {
-         Log.d(Constants.STATUS_TAG_ADD_NOTE_SCREEN,"Insert in NoteUseCase")
-
-         return withContext(Dispatchers.IO){
+    suspend fun insertNote(note: Note): Long {
+        return withContext(Dispatchers.IO) {
             try {
-                val noteConvert = note.toNoteEntity()
 
+                val noteConvert = note.toNoteEntity()
                 noteRepository.insertNote(noteConvert)
 
-            }catch (e: Exception){
-                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR INSERT NOTE ${e.message}")
+            } catch (e: Exception) {
+                Log.d(Constants.ERROR, "AddUseCase insertNote ${e.message}")
                 -1
             }
         }
 
     }
 
-    suspend fun insertImageToFileDir(uri: Uri, fileName: String): String{
-      return withContext(Dispatchers.Default){
-          try{
-              imageRepository.saveImage(uri, fileName)
+    suspend fun insertImageToFileDir(uri: Uri, fileName: String): String {
+        return withContext(Dispatchers.Default) {
+            try {
+                imageRepository.saveImage(uri, fileName)
 
-          }catch (e: Exception){
-              Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN,"ERROR INSERT NOTE ${e.message}")
-              ""
-          }
+            } catch (e: Exception) {
+                Log.d(Constants.ERROR, "AddUseCase insertImageToFileDir ${e.message}")
+                ""
+            }
 
-      }
+        }
 
     }
 

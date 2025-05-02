@@ -12,7 +12,7 @@ import kotlin.random.Random
 
 class NotificationWorker(
     context: Context,
-     workerParameters: WorkerParameters
+    workerParameters: WorkerParameters
 ) : Worker(context, workerParameters) {
     override fun doWork(): Result {
         val title = inputData.getString("note_title") ?: "New Note"

@@ -24,7 +24,7 @@ class AddScreenUIFields {
     var categoryMenuExpanded = mutableStateOf(false)
     var selectedCategory = mutableStateOf(defaultItemCategory)
 
-    val defaultItemPriority = ItemDropMenu("Priority", color = Color.Transparent)
+    private val defaultItemPriority = ItemDropMenu("Priority", color = Color.Transparent)
     val listPriority = listOf(
         ItemDropMenu("1", color = low),
         ItemDropMenu("2", color = medium),

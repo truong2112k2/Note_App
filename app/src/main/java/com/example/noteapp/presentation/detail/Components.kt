@@ -323,10 +323,6 @@ fun EditTopAppBar(
 
                         .clickable {
 
-                            Log.d(
-                                Constants.STATUS_TAG_DETAIL_SCREEN,
-                                "ImageSelect = ${selectImage} Note = ${note.toString()}"
-                            )
                             launcherPickImage.launch("image/*")
 
 

@@ -1,12 +1,11 @@
-package com.example.noteapp.domain.repository
+package com.example.noteapp.data.data_source.local.repository
 
 import com.example.noteapp.data.data_source.local.database.NoteEntity
 import kotlinx.coroutines.flow.Flow
 
-interface INoteRepository {
-
+interface INoteDataSourceRepository {
     suspend fun insertNote(note: NoteEntity): Long
-    fun getAllNote(): Flow<List<NoteEntity>>
+
 
     suspend fun updateNote(note: NoteEntity): Int
 
@@ -14,8 +13,9 @@ interface INoteRepository {
 
     suspend fun getNoteByID(id: Long): NoteEntity?
 
-    suspend fun searchNotesByTitle(title: String): Flow<List<NoteEntity>>
+    fun getAllNote(): Flow<List<NoteEntity>>
 
+    suspend fun searchNotesByTitle(title: String): Flow<List<NoteEntity>>
     suspend fun searchNotesByDate(date: String): Flow<List<NoteEntity>>
 
     suspend fun deleteNotesByIds(ids: List<Long>): Int

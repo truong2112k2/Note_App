@@ -1,15 +1,9 @@
 package com.example.noteapp.common
 
 object Constants {
-    const val ERROR_TAG_ADD_NOTE_SCREEN = "ERROR_TAG_ADD_NOTE_SCREEN"
-    const val ERROR_TAG_HOME_SCREEN  = "ERROR_TAG_HOME_SCREEN"
-    const val ERROR_TAG_DETAIL_SCREEN = "ERROR_TAG_DETAIL_SCREEN"
 
-    const val STATUS_TAG_ADD_NOTE_SCREEN = "STATUS_TAG_ADD_NOTE_SCREEN"
-    const val STATUS_TAG_HOME_SCREEN = "STATUS_TAG_HOME_SCREEN"
-    const val STATUS_TAG_DETAIL_SCREEN = "STATUS_TAG_DETAIL_SCREEN"
-
-
+    const val ERROR = "ERROR"
+    const val STATUS = "ERROR"
 
 
 

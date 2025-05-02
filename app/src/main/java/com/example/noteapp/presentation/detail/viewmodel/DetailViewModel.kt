@@ -27,44 +27,7 @@ class DetailViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-
-
-//    val isShowAllDetail = mutableStateOf(false)
-//
-//    val switchTopAppBar = mutableStateOf(false)
-//
-//    val showDiaLogDelete = mutableStateOf(false)
-//
-//    val listCategory = listOf(
-//        ItemDropMenu("Work", icon = R.drawable.ic_work),
-//        ItemDropMenu("Relax", icon = R.drawable.ic_relax),
-//        ItemDropMenu("Sport", icon = R.drawable.ic_sport),
-//        ItemDropMenu("Language", icon = R.drawable.ic_language),
-//        ItemDropMenu("Else", icon = R.drawable.ic_else),
-//    )
-//
-//    val listPriority = listOf(
-//        ItemDropMenu("1", color = low),
-//        ItemDropMenu("2", color = medium),
-//        ItemDropMenu("3", color = high),
-//    )
-//
-//
-//
-//    var categoryMenuExpanded = mutableStateOf(false)
-//    var priorityMenuExpanded = mutableStateOf(false)
-//    var showPickerTime = mutableStateOf(false)
-//    var showPickerDate = mutableStateOf(false)
-//    var selectedImageUri = mutableStateOf<Uri?>(null) // reset
-//    var showDialogUpdate = mutableStateOf(false)
-//    var dialogUpdateMessage = mutableStateOf("") //reset
-//    val showImage = mutableStateOf(true)
-//
-//
-
     private val detailNoteFields = DetailScreenFields()
-
-
 
     val isShowAllDetail =  detailNoteFields.isShowAllDetail
 
@@ -75,7 +38,6 @@ class DetailViewModel @Inject constructor(
     val listCategory = detailNoteFields.listCategory
 
     val listPriority = detailNoteFields.listPriority
-
 
     var categoryMenuExpanded = detailNoteFields.categoryMenuExpanded
     var priorityMenuExpanded = detailNoteFields.priorityMenuExpanded
@@ -110,7 +72,6 @@ class DetailViewModel @Inject constructor(
 
     private val _updateSate = MutableStateFlow<UpdateState>(UpdateState())
     val updateState: StateFlow<UpdateState> = _updateSate.asStateFlow()
-
 
 
     @SuppressLint("NewApi")
@@ -151,7 +112,8 @@ class DetailViewModel @Inject constructor(
                     uri,
                     currentTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ".Jpg"
                 )
-                Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Saved new image: $newImagePath")
+
+
             }
 
 
@@ -192,13 +154,13 @@ class DetailViewModel @Inject constructor(
 
             // 👉 Cập nhật ghi chú
             noteUseCases.updateUseCase.updateNote(newNote)
-            Log.d("2312321", "ID note Update ${note.id}")
 
             // 👉 Lên lịch thông báo nếu có
             noteUseCases.scheduleUseCase.scheduleNotification(context, note, note.id.toString())
 
             _updateSate.value = UpdateState(isLoading = false, isSuccess = true)
-            Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Update completed: $newNote")
+            Log.d(Constants.STATUS, "DetailViewModel-updateNoteDatabase: Update completed: $newNote")
+
         }
     }
 
@@ -233,12 +195,12 @@ class DetailViewModel @Inject constructor(
                     onSuccess()
                 }
 
-                Log.d(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete successfully")
+                Log.d(Constants.STATUS, "DetailViewModel deleteNoteById: Delete is successfully")
             }.onFailure { e ->
 
                    showDialogUpdate.value = true
 
-                Log.e(Constants.STATUS_TAG_DETAIL_SCREEN, "Delete failed: ${e.message}")
+                Log.e(Constants.ERROR, "DetailViewModel deleteNoteById:Delete failed: ${e.message}")
             }
 
 

@@ -4,6 +4,7 @@ import com.example.noteapp.data.data_source.local.database.NoteEntity
 import com.example.noteapp.domain.model.Note
 
 fun NoteEntity.toNote(): Note {
+
     return Note(
         id = this.id,
         title = this.title,
@@ -29,4 +30,5 @@ fun Note.toNoteEntity(): NoteEntity {
         timeNotify = this.timeNotify,
         dateNotify = this.dateNotify
     )
+
 }

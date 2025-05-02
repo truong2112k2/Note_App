@@ -22,18 +22,18 @@ import kotlin.random.Random
 
 @Composable
 fun GradientBackground() {
-    val primaryColor = MaterialTheme.colorScheme.primary  // ✅ lấy ra trước
+    val primaryColor = MaterialTheme.colorScheme.primary
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawRect(color = primaryColor, size = size)
 
-        // Vùng vàng chính - mạnh và to
+
         drawCircle(
             brush = Brush.radialGradient(
                 colors = listOf(
                     primaryColor,
-                    Color(0xFFFFF59D),     // vàng nhạt
-                    Color.Transparent      // kết thúc
+                    Color(0xFFFFF59D),
+                    Color.Transparent
                 ),
                 radius = size.maxDimension * 0.9f
             ),

@@ -398,15 +398,16 @@ fun DetailNoteScreen(
     }
 
 
+
     if (showDialogDelete) {
         ConfirmDeleteDialog(
-            context = context,
             title = "Notification",
-            message = "Are you sure about delete this note?",
+            message = "Are you sure about delete ${note.title} ?",
             positiveText = "Ok",
             negativeText = "Cancel",
             onConfirm = {
                 detailViewModel.deleteNoteById(context, note, onSuccess = {
+                    detailViewModel.setShowDialogDelete(false)
                     navController.popBackStack()
 
                 }
@@ -414,7 +415,9 @@ fun DetailNoteScreen(
             },
             onCancel = {
                 detailViewModel.setShowDialogDelete(false)
-            }
+            },
+
+
         )
     }
     CategoryAndPriorityMenu(detailViewModel, note)

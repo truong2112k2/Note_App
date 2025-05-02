@@ -7,19 +7,26 @@ import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerColors
+import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -53,6 +60,7 @@ fun AlertDialogTimePicker(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CustomDatePicker(
@@ -61,6 +69,9 @@ fun CustomDatePicker(
     onClickNegativeButton: () -> Unit,
     onSelectDate: (localDate: String) -> Unit
 ) {
+
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
     val dateDialogState = rememberMaterialDialogState()
 
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -83,10 +94,10 @@ fun CustomDatePicker(
     MaterialDialog(
         dialogState = dateDialogState,
         buttons = {
-            positiveButton("OK") {
+            positiveButton("OK", textStyle = TextStyle(color = primaryColor)) {
                 onClickPositiveButton()
             }
-            negativeButton("Cancel") {
+            negativeButton("Cancel", textStyle = TextStyle(color = primaryColor)) {
                 onClickNegativeButton()
             }
         },
@@ -107,7 +118,18 @@ fun CustomDatePicker(
         ) {
             datepicker(
                 initialDate = LocalDate.now(),
-                title = "Pick Date"
+                title = "Pick Date",
+             colors = com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults.colors(
+                 headerBackgroundColor = onPrimaryColor,
+                 headerTextColor = primaryColor,
+                 calendarHeaderTextColor = primaryColor,
+                 dateActiveBackgroundColor = Color.Black,
+                 dateActiveTextColor = Color.Yellow,
+                 dateInactiveTextColor = Color.DarkGray,
+             )
+
+
+
             ) {
                 onSelectDate(it.format(formatter))
             }
@@ -125,52 +147,98 @@ fun CustomTimePicker(
     onDismiss: () -> Unit,
 ) {
     val currentTime = Calendar.getInstance()
-
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
     val timePickerState = rememberTimePickerState(
         initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
         initialMinute = currentTime.get(Calendar.MINUTE),
         is24Hour = true,
     )
 
-    AlertDialogTimePicker(
-        onDismiss = { onDismiss() },
-        onConfirm = { onConfirm(timePickerState) }
-    ) {
-        TimePicker(
-            state = timePickerState,
 
-        )
-    }
+
+        val customColors = TimePickerDefaults.colors(
+        clockDialColor = primaryColor, // Color of the clock dial
+        clockDialSelectedContentColor = Color.Black, // Selected content color on the dial
+        clockDialUnselectedContentColor = onPrimaryColor, // Unselected content color on the dial
+        selectorColor = Color.White, // Color for the selector (hour/minute)
+        containerColor = primaryColor, // Container color for the TimePicker
+        timeSelectorSelectedContainerColor = onPrimaryColor, // Background color for selected time
+        timeSelectorUnselectedContainerColor = onPrimaryColor, // Background color for unselected time
+        timeSelectorSelectedContentColor = primaryColor, // Text color for selected time
+        timeSelectorUnselectedContentColor = primaryColor, // Text color for unselected time
+    )
+    // Define custom colors for the buttons
+    val confirmButtonColors = ButtonDefaults.buttonColors(
+        containerColor = onPrimaryColor, // Background color for Confirm button
+        contentColor = primaryColor // Text color for Confirm button
+    )
+
+    val dismissButtonColors = ButtonDefaults.buttonColors(
+        containerColor = onPrimaryColor, // Background color for Confirm button
+        contentColor = primaryColor // Text color for Confirm button
+    )
+
+    // Create an AlertDialog with a custom Confirm and Dismiss button
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text("Select Time") },
+        text = {
+            TimePicker(
+                state = timePickerState,
+                colors = customColors
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(timePickerState) },
+                colors = confirmButtonColors // Apply custom colors to the Confirm button
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = { onDismiss() },
+                colors = dismissButtonColors // Apply custom colors to the Dismiss button
+            ) {
+                Text("Dismiss")
+            }
+        }
+    )
 }
+
 
 @Composable
 fun ConfirmDeleteDialog(
-    context: Context,
     title: String,
     message: String,
     positiveText: String,
     negativeText: String,
     onConfirm: () -> Unit,
-    onCancel: () -> Unit = {}
+    onCancel: () -> Unit,
 ) {
-    android.app.AlertDialog.Builder(context)
-        .setTitle(title)
-        .setMessage(message)
-        .setPositiveButton(positiveText) { dialog, _ ->
-            onConfirm()
-
-
-        }
-        .setNegativeButton(negativeText) { dialog, _ ->
-            onCancel()
-
-        }
-        .setCancelable(true)
-        .show()
-
-
+    AlertDialog(
+        onDismissRequest = {},
+        title = {
+            Text(text = title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onPrimary)
+        },
+        text = {
+            Text(text = message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary)
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(positiveText, color = MaterialTheme.colorScheme.onPrimary)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancel) {
+                Text(negativeText, color = MaterialTheme.colorScheme.onPrimary)
+            }
+        },
+        shape = RoundedCornerShape(16.dp)
+    )
 }
-
 
 @Composable
 fun CreateATitle(title: String){

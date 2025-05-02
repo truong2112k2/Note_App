@@ -2,19 +2,48 @@
 package com.example.noteapp.presentation.home
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.util.Log
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,6 +61,9 @@ import com.example.noteapp.presentation.ConfirmDeleteDialog
 import com.example.noteapp.presentation.CreateATitle
 import com.example.noteapp.presentation.CustomDatePicker
 import com.example.noteapp.presentation.home.viewmodel.HomeViewModel
+import com.example.noteapp.ui.theme.high
+import com.example.noteapp.ui.theme.low
+import com.example.noteapp.ui.theme.medium
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +104,9 @@ fun TopBarHomeScreen(
 
             IconButton(
                 onClick = {
+                    if (isListMode == false) {
+                        homeViewModel.clearSelection()
+                    }
                     homeViewModel.toggleListMode()
                     Log.d("Check mode List", "Click List Mode = $isListMode")
                 },
@@ -138,7 +173,13 @@ fun SearchBar(homeViewModel: HomeViewModel) {
                         )
                     },
                     singleLine = true,
-                    label = { Text("By name", color = onPrimaryColor, style = MaterialTheme.typography.labelSmall) }
+                    label = {
+                        Text(
+                            "By name",
+                            color = onPrimaryColor,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
                 )
             }
 
@@ -188,19 +229,20 @@ fun NoteItem(note: Note, onClickItem: () -> Unit) {
             .clickable { onClickItem() },
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.65f))
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(4.dp),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(if (note.priority == 1) low else if (note.priority == 2) medium else high)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = note.title,
                 style = MaterialTheme.typography.headlineSmall,
@@ -209,6 +251,8 @@ fun NoteItem(note: Note, onClickItem: () -> Unit) {
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
+        }
+        Column(modifier = Modifier.padding(16.dp)) {
             Spacer(modifier = Modifier.height(note.height.dp))
             Text(
                 text = note.content,
@@ -228,7 +272,12 @@ fun NoteItemSelected(note: Note, isSelected: Boolean, onToggleSelect: () -> Unit
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .border(BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.onPrimary else Color.Transparent), cardShape),
+            .border(
+                BorderStroke(
+                    1.dp,
+                    if (isSelected) MaterialTheme.colorScheme.onPrimary else Color.Transparent
+                ), cardShape
+            ),
         shape = cardShape,
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.65f)),
         onClick = { onToggleSelect() }
@@ -271,19 +320,18 @@ fun NoteItemSelected(note: Note, isSelected: Boolean, onToggleSelect: () -> Unit
 @Composable
 fun ShowConfirmDeleteDialog(
     isDeleteDialog: Boolean? = null,
-    context: Context,
     onDeleteNote: () -> Unit,
     onCancel: () -> Unit,
+    sumNotes: Int
 
 
-
-    ) {
-    if(isDeleteDialog == true){
+) {
+    if (isDeleteDialog == true) {
 
         ConfirmDeleteDialog(
-            context,
+
             title = "Notification",
-            message = "Are you sure about delete notes?",
+            message = "Are you sure about delete ${sumNotes} notes?",
             positiveText = "Ok",
             negativeText = "Cancel",
             onConfirm = {
@@ -300,9 +348,9 @@ fun ShowConfirmDeleteDialog(
         )
 
 
-    }else{
+    } else {
         ConfirmDeleteDialog(
-            context,
+
             title = "Notification",
             message = "None notes selected",
             positiveText = "Ok",

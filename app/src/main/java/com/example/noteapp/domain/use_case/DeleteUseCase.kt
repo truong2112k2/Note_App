@@ -22,7 +22,7 @@ class DeleteUseCase @Inject constructor(
                 noteRepository.deleteNoteById(id)
 
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG_DETAIL_SCREEN, "ERROR DELETE NOTE ${e.message}")
+                Log.d(Constants.ERROR, "DeleteUseCase deleteNoteById ${e.message}")
 
                 -1
             }
@@ -34,6 +34,8 @@ class DeleteUseCase @Inject constructor(
             try {
                 noteRepository.deleteNotesByIds(ids)
             } catch (e: Exception) {
+                Log.d(Constants.ERROR, "DeleteUseCase deleteNotesByIds ${e.message}")
+
                 -1
             }
         }
@@ -45,7 +47,7 @@ class DeleteUseCase @Inject constructor(
             try {
                 imageRepository.deleteImage(fileName)
             } catch (e: Exception) {
-                Log.d(Constants.ERROR_TAG_DETAIL_SCREEN, "ERROR DELETE IMAGE ${e.message}")
+                Log.d(Constants.ERROR, "DeleteUseCase deleteImage ${e.message}")
                 false
             }
         }

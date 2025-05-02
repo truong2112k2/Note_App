@@ -128,6 +128,7 @@ class AddNoteViewModel @Inject constructor(
         fun resetAddState() {
         _addNoteState.value = AddNoteState()
     }
+
     @SuppressLint("NewApi")
     fun insertNote(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -141,25 +142,21 @@ class AddNoteViewModel @Inject constructor(
                     contentNote.value.isEmpty())
                 {
                     _addNoteState.value = AddNoteState(error = "Fill in all fields. Please!")
-                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
                     return@launch
                 }
 
                 if (selectedTime.value == "00:00" || selectedDate.value == "00/00/0000") {
                     _addNoteState.value = AddNoteState(error = "Select time and date. Please!")
-                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
                     return@launch
                 }
 
                 if (titleNote.value.length > 50 || contentNote.value.length > 5000) {
                     _addNoteState.value = AddNoteState(error = "Title or content too long")
-                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
                     return@launch
                 }
 
                 if (TimeUtils.isNotifyTimeInPast(selectedDate.value, selectedTime.value)) {
                     _addNoteState.value = AddNoteState(error = "Time is in the past")
-                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
                     return@launch
                 }
 
@@ -197,18 +194,19 @@ class AddNoteViewModel @Inject constructor(
 
                 if (idNoteInsert.toInt() == -1) {
                     _addNoteState.value = AddNoteState(error = "Insert failed")
-                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.error)
+                    Log.d(Constants.ERROR, "AddNoteViewModel Insert failed ${_addNoteState.value.error}")
+
                 } else {
                     _addNoteState.value = AddNoteState(isSuccess = true)
-
-                    Log.d("add", _addNoteState.value.isSuccess.toString())
                     noteUseCases.scheduleUseCase.scheduleNotification(context, note, idNoteInsert.toString())
-                    Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, _addNoteState.value.isSuccess.toString())
-                }
+                    Log.d(Constants.ERROR, "AddNoteViewModel insert success ${_addNoteState.value.isSuccess.toString()}")
 
+                }
             } catch (e: Exception) {
+
                 _addNoteState.value = AddNoteState(error = e.message ?: "Unknown error")
-                Log.d(Constants.ERROR_TAG_ADD_NOTE_SCREEN, e.message.toString())
+                Log.d(Constants.ERROR, "AddNoteViewModel Insert failed  ${e.message.toString()}")
+
             }
         }
     }

@@ -7,7 +7,9 @@ import androidx.annotation.RequiresApi
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.noteapp.common.Constants
 import com.example.noteapp.data.data_source.local.database.NoteEntity
+import com.example.noteapp.data.data_source.local.repository.IWorkManagerDataSourceRepository
 import com.example.noteapp.work_manager.NotificationWorker
 import java.time.Duration
 import java.time.LocalDateTime
@@ -18,11 +20,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WorkManagerDataSource @Inject constructor() {
+class WorkManagerDataSource @Inject constructor() : IWorkManagerDataSourceRepository {
 
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun scheduleNotification(context: Context, note: NoteEntity, noteId: String) {
+    override fun scheduleNotification(context: Context, note: NoteEntity, noteId: String) {
 
         try {
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.getDefault())
@@ -40,25 +42,25 @@ class WorkManagerDataSource @Inject constructor() {
             val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
                 .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
                 .setInputData(data)
-                .addTag(noteId) // 💡 Gán tag theo id của note
+                .addTag(noteId)
                 .build()
 
             WorkManager.getInstance(context).enqueue(workRequest)
-            Log.d("Check Note Id", "Note id scheduleNotification ${noteId}")
+            Log.d(Constants.STATUS, "WorkManagerDataSource: note id scheduleNotification ${noteId}")
         } catch (e: Exception) {
-            Log.d("ADSAD", e.message.toString())
+            Log.d(Constants.ERROR, "WorkManagerDataSource-scheduleNotification: ${e.message}")
         }
 
 
     }
 
 
-    fun cancelNoteNotification(context: Context, noteId: String) {
+    override fun cancelNoteNotification(context: Context, noteId: String) {
 
         try {
             WorkManager.getInstance(context).cancelAllWorkByTag(noteId)
         } catch (e: Exception) {
-            Log.d("12321321", e.message.toString())
+            Log.d(Constants.ERROR, "WorkManagerDataSource-cancelNoteNotification: ${e.message}")
 
         }
 

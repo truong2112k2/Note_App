@@ -16,14 +16,12 @@ class DataStorageUtils @Inject constructor (private val dataStore: DataStore<Pre
         val THEME_KEY = booleanPreferencesKey("theme_dark_mode")
     }
 
-    // Lưu theme (dark/light)
     suspend fun saveTheme(isDarkTheme: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_KEY] = isDarkTheme
         }
     }
 
-    // Đọc theme
     val themeFlow: Flow<Boolean> = dataStore.data
         .map { preferences ->
             preferences[PreferencesKeys.THEME_KEY] ?: false // Default là false (light theme)

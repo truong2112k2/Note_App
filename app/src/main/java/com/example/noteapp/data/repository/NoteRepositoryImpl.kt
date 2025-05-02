@@ -1,8 +1,8 @@
 package com.example.noteapp.data.repository
 
-import androidx.paging.PagingSource
 import com.example.noteapp.data.data_source.local.database.NoteEntity
-import com.example.noteapp.data.data_source.local.source.NoteLocalDataSource
+import com.example.noteapp.data.data_source.local.repository.INoteDataSourceRepository
+import com.example.noteapp.data.data_source.local.source.NoteDataSource
 import com.example.noteapp.domain.repository.INoteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,8 +12,9 @@ import javax.inject.Singleton
 
 @Singleton
 class NoteRepositoryImpl @Inject constructor(
-    private val noteLocalDataSource: NoteLocalDataSource
+    private val noteLocalDataSource: INoteDataSourceRepository
 ) : INoteRepository {
+
     override suspend fun insertNote(note: NoteEntity): Long {
         return withContext(Dispatchers.IO) {
             noteLocalDataSource.insertNote(note)
@@ -51,13 +52,12 @@ class NoteRepositoryImpl @Inject constructor(
         return noteLocalDataSource.searchNotesByDate(date)
     }
 
-    override fun getPagedNotes(): PagingSource<Int, NoteEntity> {
-        return noteLocalDataSource.getPagedNotes()
-    }
 
     override suspend fun deleteNotesByIds(ids: List<Long>): Int {
         return noteLocalDataSource.deleteNotesByIds(ids)
     }
+
+
 }
 
 

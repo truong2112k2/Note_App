@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.noteapp.R
+import com.example.noteapp.common.Constants
 import com.example.noteapp.ui.background.GradientBackground
 import kotlinx.coroutines.delay
 
@@ -27,8 +28,8 @@ fun SplashScreen(navController: NavHostController) {
     // Sử dụng LaunchedEffect để delay và chuyển màn
     LaunchedEffect(key1 = true) {
         delay(2000) // 2 giây
-        navController.navigate("home") {
-            popUpTo("splash") { inclusive = true } // Xóa splash khỏi back stack
+        navController.navigate(Constants.HOME_ROUTE) {
+            popUpTo(Constants.SPlASH_ROUTE) { inclusive = true } // Xóa splash khỏi back stack
         }
     }
 

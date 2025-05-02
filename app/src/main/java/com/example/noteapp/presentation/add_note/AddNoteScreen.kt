@@ -83,7 +83,6 @@ fun AddNoteScreen(
     navController: NavController,
     addNoteViewModel: AddNoteViewModel = hiltViewModel()
 ) {
-    val primaryColor = MaterialTheme.colorScheme.primary
     val onPrimaryColor = MaterialTheme.colorScheme.onPrimary
 
     Box(
@@ -431,14 +430,13 @@ fun AddNoteScreen(
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = {
-                        addNoteViewModel.updateShowDialog(false)
-                        addNoteViewModel.resetAddState()
+
                     },
                     title = {
                         Text(text = if (addNoteState.isSuccess) "Success" else "Error")
                     },
                     text = {
-                        Text(dialogMessage)
+                        Text(dialogMessage, color = MaterialTheme.colorScheme.onPrimary)
                     },
                     confirmButton = {
                         TextButton(
@@ -453,7 +451,7 @@ fun AddNoteScreen(
                                 Log.d("Check","After add" + addNoteState.isSuccess.toString() )
                             }
                         ) {
-                            Text("OK")
+                            Text("OK", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                 )

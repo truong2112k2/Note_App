@@ -1,8 +1,7 @@
 package com.example.noteapp.data.repository
 
 import com.example.noteapp.data.data_source.local.database.NoteEntity
-import com.example.noteapp.data.data_source.local.repository.INoteDataSourceRepository
-import com.example.noteapp.data.data_source.local.source.NoteDataSource
+import com.example.noteapp.data.data_source.local.source.INoteDataSource
 import com.example.noteapp.domain.repository.INoteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class NoteRepositoryImpl @Inject constructor(
-    private val noteLocalDataSource: INoteDataSourceRepository
+    private val noteLocalDataSource: INoteDataSource
 ) : INoteRepository {
 
     override suspend fun insertNote(note: NoteEntity): Long {

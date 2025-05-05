@@ -1,10 +1,10 @@
-package com.example.noteapp.data.data_source.local.source
+package com.example.noteapp.data.data_source.local.source.impl
 
 import android.util.Log
 import com.example.noteapp.common.Constants
 import com.example.noteapp.data.data_source.local.database.NoteDao
 import com.example.noteapp.data.data_source.local.database.NoteEntity
-import com.example.noteapp.data.data_source.local.repository.INoteDataSourceRepository
+import com.example.noteapp.data.data_source.local.source.INoteDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class NoteDataSource @Inject constructor(
     private val noteDao: NoteDao
-): INoteDataSourceRepository {
+): INoteDataSource {
      override suspend fun insertNote(note: NoteEntity): Long {
         Log.d(Constants.STATUS, "NoteLocalDataSource InsertNote")
         return withContext(Dispatchers.IO) {

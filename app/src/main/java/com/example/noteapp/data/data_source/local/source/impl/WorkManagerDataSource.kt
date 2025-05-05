@@ -1,4 +1,4 @@
-package com.example.noteapp.data.data_source.local.source
+package com.example.noteapp.data.data_source.local.source.impl
 
 import android.content.Context
 import android.os.Build
@@ -9,7 +9,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.noteapp.common.Constants
 import com.example.noteapp.data.data_source.local.database.NoteEntity
-import com.example.noteapp.data.data_source.local.repository.IWorkManagerDataSourceRepository
+import com.example.noteapp.data.data_source.local.source.IWorkManagerDataSource
 import com.example.noteapp.work_manager.NotificationWorker
 import java.time.Duration
 import java.time.LocalDateTime
@@ -20,7 +20,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WorkManagerDataSource @Inject constructor() : IWorkManagerDataSourceRepository {
+class WorkManagerDataSource @Inject constructor() : IWorkManagerDataSource {
 
 
     @RequiresApi(Build.VERSION_CODES.O)

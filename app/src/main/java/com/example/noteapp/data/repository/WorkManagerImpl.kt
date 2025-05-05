@@ -3,8 +3,7 @@ package com.example.noteapp.data.repository
 import android.annotation.SuppressLint
 import android.content.Context
 import com.example.noteapp.data.data_source.local.database.NoteEntity
-import com.example.noteapp.data.data_source.local.repository.IWorkManagerDataSourceRepository
-import com.example.noteapp.data.data_source.local.source.WorkManagerDataSource
+import com.example.noteapp.data.data_source.local.source.IWorkManagerDataSource
 import com.example.noteapp.domain.repository.IWorkManagerRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class WorkManagerImpl @Inject constructor(
-   private val workManagerDataSource: IWorkManagerDataSourceRepository
+   private val workManagerDataSource: IWorkManagerDataSource
 ): IWorkManagerRepository {
 
     @SuppressLint("NewApi")

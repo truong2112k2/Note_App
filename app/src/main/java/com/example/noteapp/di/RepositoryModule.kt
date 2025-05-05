@@ -1,13 +1,13 @@
 package com.example.noteapp.di
 
-import com.example.noteapp.data.data_source.local.repository.IDataStorageSourceRepository
-import com.example.noteapp.data.data_source.local.repository.IImageDataSourceRepository
-import com.example.noteapp.data.data_source.local.repository.INoteDataSourceRepository
-import com.example.noteapp.data.data_source.local.repository.IWorkManagerDataSourceRepository
-import com.example.noteapp.data.data_source.local.source.DataStorageSource
-import com.example.noteapp.data.data_source.local.source.ImageDataSource
-import com.example.noteapp.data.data_source.local.source.NoteDataSource
-import com.example.noteapp.data.data_source.local.source.WorkManagerDataSource
+import com.example.noteapp.data.data_source.local.source.IDataStorageDataSource
+import com.example.noteapp.data.data_source.local.source.IImageDataSource
+import com.example.noteapp.data.data_source.local.source.INoteDataSource
+import com.example.noteapp.data.data_source.local.source.IWorkManagerDataSource
+import com.example.noteapp.data.data_source.local.source.impl.DataStorageSource
+import com.example.noteapp.data.data_source.local.source.impl.ImageDataSource
+import com.example.noteapp.data.data_source.local.source.impl.NoteDataSource
+import com.example.noteapp.data.data_source.local.source.impl.WorkManagerDataSource
 import com.example.noteapp.data.repository.DataStorageImpl
 import com.example.noteapp.data.repository.ImageRepositoryImpl
 import com.example.noteapp.data.repository.NoteRepositoryImpl
@@ -44,18 +44,18 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindIDataStorageRepository(dataStorageSource: DataStorageSource): IDataStorageSourceRepository
+    abstract fun bindIDataStorageRepository(dataStorageSource: DataStorageSource): IDataStorageDataSource
 
     @Binds
     @Singleton
-    abstract fun bindIImageDataSourceRepository(imageDataSource: ImageDataSource): IImageDataSourceRepository
+    abstract fun bindIImageDataSourceRepository(imageDataSource: ImageDataSource): IImageDataSource
 
     @Binds
     @Singleton
-    abstract fun bindINoteDataSourceRepository(noteDataSource: NoteDataSource): INoteDataSourceRepository
+    abstract fun bindINoteDataSourceRepository(noteDataSource: NoteDataSource): INoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindIWorkManagerDataSourceRepository(workManagerDataSource: WorkManagerDataSource): IWorkManagerDataSourceRepository
+    abstract fun bindIWorkManagerDataSourceRepository(workManagerDataSource: WorkManagerDataSource): IWorkManagerDataSource
 }
 

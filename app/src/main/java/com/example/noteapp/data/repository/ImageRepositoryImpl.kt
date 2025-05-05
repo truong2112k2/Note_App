@@ -1,8 +1,7 @@
 package com.example.noteapp.data.repository
 
 import android.net.Uri
-import com.example.noteapp.data.data_source.local.repository.IImageDataSourceRepository
-import com.example.noteapp.data.data_source.local.source.ImageDataSource
+import com.example.noteapp.data.data_source.local.source.IImageDataSource
 import com.example.noteapp.domain.repository.IImageRepository
 import java.io.File
 import javax.inject.Inject
@@ -10,7 +9,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ImageRepositoryImpl @Inject constructor(
- private val imageFileDataSource: IImageDataSourceRepository
+ private val imageFileDataSource: IImageDataSource
 ) : IImageRepository {
 
     override suspend fun saveImage(uri: Uri, fileName: String): String {

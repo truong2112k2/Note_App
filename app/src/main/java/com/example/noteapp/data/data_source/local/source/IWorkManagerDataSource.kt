@@ -1,9 +1,9 @@
-package com.example.noteapp.data.data_source.local.repository
+package com.example.noteapp.data.data_source.local.source
 
 import android.content.Context
 import com.example.noteapp.data.data_source.local.database.NoteEntity
 
-interface IWorkManagerDataSourceRepository {
+interface IWorkManagerDataSource {
 
 
     fun scheduleNotification(context: Context, note: NoteEntity, noteId: String)

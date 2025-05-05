@@ -1,9 +1,9 @@
-package com.example.noteapp.data.data_source.local.repository
+package com.example.noteapp.data.data_source.local.source
 
 import com.example.noteapp.data.data_source.local.database.NoteEntity
 import kotlinx.coroutines.flow.Flow
 
-interface INoteDataSourceRepository {
+interface INoteDataSource {
     suspend fun insertNote(note: NoteEntity): Long
 
 

@@ -1,8 +1,8 @@
-package com.example.noteapp.data.data_source.local.repository
+package com.example.noteapp.data.data_source.local.source
 
 import kotlinx.coroutines.flow.Flow
 
-interface IDataStorageSourceRepository {
+interface IDataStorageDataSource {
 
     suspend fun saveTheme(isDarkTheme: Boolean)
     suspend fun getTheme(): Flow<Boolean>

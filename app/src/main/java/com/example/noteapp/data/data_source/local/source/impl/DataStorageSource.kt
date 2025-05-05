@@ -1,8 +1,8 @@
-package com.example.noteapp.data.data_source.local.source
+package com.example.noteapp.data.data_source.local.source.impl
 
 import android.util.Log
 import com.example.noteapp.common.Constants
-import com.example.noteapp.data.data_source.local.repository.IDataStorageSourceRepository
+import com.example.noteapp.data.data_source.local.source.IDataStorageDataSource
 import com.example.noteapp.data.data_source.local.utils.DataStorageUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class DataStorageSource @Inject constructor(
     private val dataStorageUtils: DataStorageUtils
-) : IDataStorageSourceRepository {
+) : IDataStorageDataSource {
 
    override suspend fun saveTheme(isDarkTheme: Boolean) {
         try {

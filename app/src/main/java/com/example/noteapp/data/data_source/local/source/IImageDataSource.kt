@@ -1,9 +1,9 @@
-package com.example.noteapp.data.data_source.local.repository
+package com.example.noteapp.data.data_source.local.source
 
 import android.net.Uri
 import java.io.File
 
-interface IImageDataSourceRepository {
+interface IImageDataSource {
 
     /*
     suspend fun saveTheme(isDarkTheme: Boolean)

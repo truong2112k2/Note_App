@@ -1,10 +1,10 @@
-package com.example.noteapp.data.data_source.local.source
+package com.example.noteapp.data.data_source.local.source.impl
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.example.noteapp.common.Constants
-import com.example.noteapp.data.data_source.local.repository.IImageDataSourceRepository
+import com.example.noteapp.data.data_source.local.source.IImageDataSource
 import com.example.noteapp.data.data_source.local.utils.ImageUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +12,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
-class ImageDataSource @Inject constructor(@ApplicationContext val context: Context) : IImageDataSourceRepository {
+class ImageDataSource @Inject constructor(@ApplicationContext val context: Context) :
+    IImageDataSource {
 
  override   suspend fun saveImage(uri: Uri, fileName: String): String {
 

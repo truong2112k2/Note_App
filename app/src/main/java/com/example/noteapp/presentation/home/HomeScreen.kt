@@ -178,12 +178,9 @@ fun HomeScreen(navController: NavController, context: Context, homeViewModel: Ho
                         context,
                         onSuccess = {
 
-                            Log.d("213213"," homeViewModel.toggleListMode() ${isListMode}")
-                            homeViewModel.toggleListMode()
-                            Log.d("213213"," homeViewModel.toggleListMode() 2 ${isListMode}")
 
-                            Log.d("213213","  homeViewModel.clearSelection()")
                             homeViewModel.clearSelection()
+                            homeViewModel.toggleListMode()
 
                         }
                     )

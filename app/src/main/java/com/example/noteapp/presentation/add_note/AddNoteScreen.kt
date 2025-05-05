@@ -79,7 +79,7 @@ import com.example.noteapp.presentation.add_note.viewmodel.AddNoteViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNoteScreen(
-    context: Context,
+    context: Context ,
     navController: NavController,
     addNoteViewModel: AddNoteViewModel = hiltViewModel()
 ) {

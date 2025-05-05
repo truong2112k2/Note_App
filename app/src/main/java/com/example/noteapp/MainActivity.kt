@@ -10,10 +10,12 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.noteapp.common.Constants
 import com.example.noteapp.presentation.CustomNavigation
 import com.example.noteapp.presentation.home.viewmodel.HomeViewModel
 import com.example.noteapp.ui.theme.CustomNoteAppTheme
@@ -36,9 +38,7 @@ class MainActivity : ComponentActivity() {
 
             CustomNoteAppTheme(useDarkTheme = isDarkTheme) {
 
-
                 val navController = rememberNavController()
-
 
                 CustomNavigation(navController, context, homeViewModel)
 
@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("RememberReturnType", "DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,8 +57,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview(
 ) {
-
-
 
 
 }

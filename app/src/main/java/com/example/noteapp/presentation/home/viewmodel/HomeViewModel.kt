@@ -92,9 +92,7 @@ class HomeViewModel @Inject constructor(
 
     fun toggleListMode() {
         uiState.isListMode.value = !uiState.isListMode.value
-//        if (uiState.isListMode.value == false) {
-//            clearSelection()
-//        }
+
     }
 
     fun toggleSelection(noteId: Long) {
